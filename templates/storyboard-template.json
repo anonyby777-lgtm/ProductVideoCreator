@@ -1,0 +1,162 @@
+{
+  "video_info": {
+    "title": "产品介绍视频",
+    "target_duration_seconds": 120,
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "fps": 30,
+    "target_audience": "目标用户群体描述",
+    "core_message": "一句话核心信息"
+  },
+  "scenes": [
+    {
+      "scene_id": "opening",
+      "scene_name": "片头动画",
+      "type": "animation",
+      "start_time": 0,
+      "end_time": 10,
+      "duration": 10,
+      "description": "Logo弹性缩放动画，产品名称渐入，副标题打字机效果",
+      "elements": [
+        "Logo (emoji或图片)",
+        "产品名称",
+        "一句话定位副标题"
+      ],
+      "voiceover": {
+        "text": "欢迎使用 [产品名]，[一句话定位]",
+        "start": 1.0,
+        "end": 9.5
+      },
+      "notes": "背景使用渐变深蓝色"
+    },
+    {
+      "scene_id": "features",
+      "scene_name": "功能亮点",
+      "type": "animation",
+      "start_time": 10,
+      "end_time": 18,
+      "duration": 8,
+      "description": "功能卡片依次展示",
+      "elements": [
+        {
+          "icon": "📊",
+          "title": "功能1",
+          "description": "功能1描述"
+        },
+        {
+          "icon": "🔍",
+          "title": "功能2",
+          "description": "功能2描述"
+        },
+        {
+          "icon": "⚡",
+          "title": "功能3",
+          "description": "功能3描述"
+        },
+        {
+          "icon": "📋",
+          "title": "功能4",
+          "description": "功能4描述"
+        }
+      ],
+      "voiceover": {
+        "text": "我们为您提供强大的[功能类型]功能，让[工作场景]变得轻松高效",
+        "start": 10.5,
+        "end": 17.5
+      }
+    },
+    {
+      "scene_id": "demo_1",
+      "scene_name": "功能演示1",
+      "type": "recording",
+      "start_time": 18,
+      "end_time": 45,
+      "duration": 27,
+      "description": "演示核心功能1",
+      "operations": [
+        {
+          "step": 1,
+          "action": "导航到功能页面",
+          "wait_time": 2
+        },
+        {
+          "step": 2,
+          "action": "点击某按钮",
+          "wait_time": 1.5
+        },
+        {
+          "step": 3,
+          "action": "输入数据",
+          "wait_time": 2
+        },
+        {
+          "step": 4,
+          "action": "查看结果",
+          "wait_time": 3
+        }
+      ],
+      "voiceover": {
+        "text": "在[页面名]页面，您可以[功能描述]。[操作说明]",
+        "start": 20,
+        "end": 44
+      }
+    },
+    {
+      "scene_id": "demo_2",
+      "scene_name": "功能演示2",
+      "type": "recording",
+      "start_time": 45,
+      "end_time": 90,
+      "duration": 45,
+      "description": "演示核心功能2",
+      "operations": [
+        {
+          "step": 1,
+          "action": "操作描述",
+          "wait_time": 2
+        }
+      ],
+      "voiceover": {
+        "text": "配音文字",
+        "start": 46,
+        "end": 89
+      }
+    },
+    {
+      "scene_id": "closing",
+      "scene_name": "片尾动画",
+      "type": "animation",
+      "start_time": 90,
+      "end_time": 100,
+      "duration": 10,
+      "description": "Logo发光效果，口号文字，行动号召按钮",
+      "elements": [
+        "Logo",
+        "口号: 让[场景]更智能、更高效",
+        "按钮: 立即开始使用"
+      ],
+      "voiceover": {
+        "text": "[产品名]，让[场景]更智能、更高效！立即开始使用吧！",
+        "start": 91,
+        "end": 99
+      }
+    }
+  ],
+  "timeline_summary": {
+    "total_duration": 100,
+    "sections": [
+      { "name": "片头", "duration": 10, "percentage": 10 },
+      { "name": "功能亮点", "duration": 8, "percentage": 8 },
+      { "name": "功能演示", "duration": 72, "percentage": 72 },
+      { "name": "片尾", "duration": 10, "percentage": 10 }
+    ]
+  },
+  "voiceover_config": {
+    "voice": "zh-CN-XiaoxiaoNeural",
+    "default_rate": "+0%",
+    "total_chars_estimate": 400,
+    "chars_per_second": 4
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "product-video-intro",
+  "version": "1.0.0",
+  "description": "产品介绍视频",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "preview": "remotion preview src/index.ts",
+    "render": "remotion render src/index.ts FinalVideo out/final.mp4",
+    "build": "tsc"
+  },
+  "keywords": [
+    "remotion",
+    "video",
+    "product-intro"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@remotion/cli": "^4.0.409",
+    "@remotion/player": "^4.0.409",
+    "@remotion/transitions": "^4.0.409",
+    "remotion": "^4.0.409"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@types/node": "^25.0.10",
+    "@types/react": "^19.2.9",
+    "playwright": "^1.58.0",
+    "typescript": "^5.9.3"
+  }
+}
