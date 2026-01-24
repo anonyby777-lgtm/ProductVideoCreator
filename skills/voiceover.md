@@ -194,6 +194,87 @@ async def generate_with_retry(text, output_file, max_retries=3):
                 return False
 ```
 
+## 跳过录屏开头的时间计算
+
+如果使用 Remotion `startFrom` 跳过录屏开头的等待/加载时间：
+
+```python
+# 跳过录屏开头 12 秒
+DEMO_SKIP = 12
+DEMO_START = 18  # 片头 + 功能亮点
+
+# 新公式：录屏时间 - 跳过时间 + 前缀时长 = 最终时间
+# 简化：录屏时间 + (DEMO_START - DEMO_SKIP) = 录屏时间 + 6
+final_time = recording_time - DEMO_SKIP + DEMO_START
+
+# 示例：录屏 20.8 秒页面加载 → 最终视频 26.8 秒
+# 20.8 - 12 + 18 = 26.8
+```
+
+## 避免配音空白间隙
+
+**重要**: 确保配音段覆盖整个视频，不留空白！
+
+### 问题示例
+
+```python
+# ❌ 错误：28-39秒有11秒空白
+VOICEOVER_SEGMENTS = [
+    (19.0, 28.0, "让我们来看看演示"),
+    (39.0, 47.5, "统计页面展示..."),  # 中间11秒无配音！
+]
+```
+
+### 解决方案
+
+```python
+# ✓ 正确：填补空白
+VOICEOVER_SEGMENTS = [
+    (19.0, 26.0, "让我们来看看演示"),
+    (27.0, 38.0, "系统正在加载统计数据..."),  # 填补空白
+    (39.0, 47.0, "统计页面展示..."),
+]
+```
+
+### 检查方法
+
+```python
+# 检查配音段之间是否有大于2秒的空白
+for i in range(len(segments) - 1):
+    gap = segments[i+1][0] - segments[i][1]
+    if gap > 2:
+        print(f"⚠️ 空白: {segments[i][1]}s - {segments[i+1][0]}s ({gap}秒)")
+```
+
+## 音量标准化
+
+配音合成后可能存在音量不一致问题（前半段小，后半段大），需要标准化：
+
+### 使用 FFmpeg loudnorm
+
+```bash
+# 标准化到 -16 LUFS（广播标准）
+ffmpeg -i input.mp4 -af "loudnorm=I=-16:TP=-1.5:LRA=11" -c:v copy output.mp4
+
+# 参数说明：
+# I=-16: 目标响度 (LUFS)
+# TP=-1.5: 真峰值上限 (dB)
+# LRA=11: 响度范围 (LU)
+```
+
+### 集成到渲染流程
+
+```bash
+# 1. 渲染原始视频
+npx remotion render src/index.ts FinalVideo out/final_raw.mp4
+
+# 2. 音量标准化
+ffmpeg -i out/final_raw.mp4 -af "loudnorm=I=-16:TP=-1.5:LRA=11" -c:v copy out/final.mp4
+
+# 3. 清理临时文件
+rm out/final_raw.mp4
+```
+
 ## 常见问题
 
 ### 配音和画面不同步
@@ -201,10 +282,19 @@ async def generate_with_retry(text, output_file, max_retries=3):
 1. 检查时间偏移计算是否正确
 2. 检查录屏时间线是否准确
 3. 检查配音实际时长是否超出目标
+4. **检查是否跳过了录屏开头**（需重新计算偏移）
 
 ### 配音语速过快/过慢
 
 调整 rate 参数或精简/扩展文字
+
+### 配音段之间有空白
+
+检查时间线，确保配音段连续覆盖，必要时添加过渡说明
+
+### 音量不一致
+
+使用 FFmpeg loudnorm 滤镜标准化音量
 
 ### 网络连接失败
 

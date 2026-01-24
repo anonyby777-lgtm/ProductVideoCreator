@@ -78,7 +78,51 @@ ProductVideoCreator/
 ```
 所有录屏相关的配音时间都需要加上偏移量。
 
-### 5. 视频结构标准化
+### 5. 避免配音空白间隙
+
+**问题**：配音段之间有长时间静默，观感不佳
+
+**解决方案**：
+- 检查配音时间线，确保覆盖整个视频
+- 空白超过2秒的段落需要添加过渡说明
+- 使用脚本自动检测空白间隙
+
+```python
+# 检测配音空白
+for i in range(len(segments) - 1):
+    gap = segments[i+1][0] - segments[i][1]
+    if gap > 2:
+        print(f"⚠️ 空白: {segments[i][1]}s - {segments[i+1][0]}s")
+```
+
+### 6. 音量标准化
+
+**问题**：不同配音片段音量不一致，前半段小后半段大
+
+**解决方案**：渲染后使用 FFmpeg loudnorm 滤镜
+
+```bash
+ffmpeg -i video.mp4 -af "loudnorm=I=-16:TP=-1.5:LRA=11" -c:v copy output.mp4
+```
+
+### 7. 跳过录屏等待时间
+
+**问题**：录屏开头有页面加载等待，观感拖沓
+
+**解决方案**：使用 Remotion `startFrom` 跳过开头
+
+```tsx
+const DEMO_SKIP = 12 * FPS;  // 跳过 12 秒
+
+<Video src={...} startFrom={DEMO_SKIP} />
+```
+
+**注意**：跳过后需重新计算配音时间线！
+```
+新公式: 录屏时间 - 跳过时间 + 前缀时长 = 最终时间
+```
+
+### 8. 视频结构标准化
 
 推荐的产品介绍视频结构：
 
