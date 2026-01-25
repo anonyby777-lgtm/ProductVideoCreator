@@ -1,6 +1,6 @@
 ---
 name: compositing
-description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果和时间线管理。
+description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果、时间线管理和故障处理。
 argument-hint: [项目路径]
 ---
 
@@ -30,7 +30,7 @@ export const RemotionRoot = () => {
     <Composition
       id="FinalVideo"
       component={FinalVideo}
-      durationInFrames={3757}  // 125秒 * 30fps
+      durationInFrames={2550}  // 85秒 * 30fps
       fps={30}
       width={1920}
       height={1080}
@@ -39,123 +39,338 @@ export const RemotionRoot = () => {
 };
 ```
 
-## 视频组件模板
+## 故障处理 (重要)
+
+### 浏览器下载失败
+
+**问题表现**:
+```
+Error: Tried to download file xxx, but the server sent no data for 20 seconds
+```
+
+**解决方案 A: 手动下载 Chrome Headless Shell**
+
+```bash
+# 1. 手动下载 (更长超时)
+curl -L --connect-timeout 30 --max-time 300 \
+  "https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.35/mac-arm64/chrome-headless-shell-mac-arm64.zip" \
+  -o /tmp/chrome-headless-shell.zip
+
+# 2. 解压到 Remotion 缓存目录
+mkdir -p ~/.cache/remotion
+unzip /tmp/chrome-headless-shell.zip -d ~/.cache/remotion/
+
+# 3. 渲染时指定浏览器路径
+npx remotion render src/index.ts VideoId out/video.mp4 \
+  --browser-executable="$HOME/.cache/remotion/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+```
+
+**解决方案 B: 使用代理**
+
+```bash
+export HTTP_PROXY=http://your-proxy:port
+export HTTPS_PROXY=http://your-proxy:port
+npx remotion browser ensure
+```
+
+### 其他常见问题
+
+| 问题 | 解决方案 |
+|------|----------|
+| Chrome 下载失败 | 手动下载或使用代理 |
+| 视频文件找不到 | 确保在 `public/` 目录，用 `staticFile()` |
+| 渲染内存不足 | `--concurrency=4` 减少并发 |
+| 字体不显示 | 使用 `@remotion/google-fonts` |
+
+## 字体配置
+
+### 使用 Google Fonts (推荐)
+
+```bash
+npm install @remotion/google-fonts
+```
+
+```tsx
+// 加载中文字体
+import { loadFont } from "@remotion/google-fonts/NotoSansSC";
+const { fontFamily } = loadFont();
+
+// 在组件中使用
+<div style={{ fontFamily }}>中文文字</div>
+```
+
+### 推荐中文字体
+
+| 字体 | 包名 | 风格 |
+|------|------|------|
+| Noto Sans SC | NotoSansSC | 现代无衬线 |
+| Noto Serif SC | NotoSerifSC | 经典衬线 |
+| ZCOOL XiaoWei | ZCOOLXiaoWei | 手写风格 |
+
+### 备选：系统字体栈
+
+```tsx
+const fontFamily = `
+  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+  "WenQuanYi Micro Hei", system-ui, sans-serif
+`;
+```
+
+## 高级动画模式
+
+### 1. Logo 弹性缩放 + 发光
+
+```tsx
+const LogoWithGlow: React.FC<{ src: string }> = ({ src }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const scale = spring({
+    frame,
+    fps,
+    config: { damping: 12, stiffness: 100 },
+  });
+
+  const glowIntensity = interpolate(
+    Math.sin(frame * 0.08),
+    [-1, 1],
+    [0.3, 0.8]
+  );
+
+  return (
+    <div
+      style={{
+        transform: `scale(${scale})`,
+        filter: `drop-shadow(0 0 ${40 * glowIntensity}px #76B900)`,
+      }}
+    >
+      <Img src={src} style={{ width: 400 }} />
+    </div>
+  );
+};
+```
+
+### 2. 文字淡入 + 上移
+
+```tsx
+const FadeInText: React.FC<{ text: string; delay?: number }> = ({
+  text,
+  delay = 0,
+}) => {
+  const frame = useCurrentFrame();
+
+  const opacity = interpolate(frame, [delay, delay + 30], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const translateY = interpolate(frame, [delay, delay + 30], [20, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <div
+      style={{
+        opacity,
+        transform: `translateY(${translateY}px)`,
+      }}
+    >
+      {text}
+    </div>
+  );
+};
+```
+
+### 3. 打字机效果
+
+```tsx
+const TypewriterText: React.FC<{ text: string; speed?: number }> = ({
+  text,
+  speed = 3,
+}) => {
+  const frame = useCurrentFrame();
+
+  const charsToShow = Math.floor(
+    interpolate(frame, [0, text.length * speed], [0, text.length], {
+      extrapolateRight: "clamp",
+    })
+  );
+
+  return <span>{text.slice(0, charsToShow)}</span>;
+};
+```
+
+### 4. 年份大字弹入
+
+```tsx
+const YearDisplay: React.FC<{ year: string; color?: string }> = ({
+  year,
+  color = "#76B900",
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const scale = spring({
+    frame,
+    fps,
+    config: { damping: 15, stiffness: 80 },
+  });
+
+  return (
+    <div
+      style={{
+        fontSize: 200,
+        fontWeight: "bold",
+        color,
+        transform: `scale(${scale})`,
+        textShadow: `0 0 60px ${color}`,
+      }}
+    >
+      {year}
+    </div>
+  );
+};
+```
+
+### 5. 背景图渐变叠加
+
+```tsx
+const BackgroundWithOverlay: React.FC<{
+  src: string;
+  opacity?: number;
+}> = ({ src, opacity = 0.3 }) => {
+  return (
+    <>
+      <AbsoluteFill>
+        <Img
+          src={staticFile(src)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity,
+          }}
+        />
+      </AbsoluteFill>
+      {/* 渐变叠加层 */}
+      <AbsoluteFill
+        style={{
+          background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%)",
+        }}
+      />
+    </>
+  );
+};
+```
+
+### 6. 数据卡片动画
+
+```tsx
+const DataCard: React.FC<{
+  value: string;
+  label: string;
+  delay: number;
+}> = ({ value, label, delay }) => {
+  const frame = useCurrentFrame();
+
+  const opacity = interpolate(frame, [delay, delay + 20], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const scale = interpolate(frame, [delay, delay + 20], [0.8, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <div
+      style={{
+        opacity,
+        transform: `scale(${scale})`,
+        textAlign: "center",
+      }}
+    >
+      <div style={{ fontSize: 56, color: "#76B900", fontWeight: "bold" }}>
+        {value}
+      </div>
+      <div style={{ fontSize: 24, color: "#888" }}>{label}</div>
+    </div>
+  );
+};
+```
+
+## 图文视频组件模板
+
+### 完整场景示例
 
 ```tsx
 import React from "react";
 import {
+  AbsoluteFill,
   Audio,
-  Video,
+  Img,
   Sequence,
   staticFile,
+  useCurrentFrame,
   useVideoConfig,
+  interpolate,
+  spring,
 } from "remotion";
-import { OpeningScene } from "./scenes/OpeningScene";
-import { FeatureCardsScene } from "./scenes/FeatureCardsScene";
-import { ClosingScene } from "./scenes/ClosingScene";
 
 const FPS = 30;
 
-// 时间配置
-const OPENING_START = 0;
-const OPENING_DURATION = 10 * FPS;
+// 场景时间配置
+const SCENES = {
+  opening: { start: 0, duration: 8 },
+  scene1: { start: 8, duration: 14 },
+  scene2: { start: 22, duration: 16 },
+  closing: { start: 38, duration: 12 },
+};
 
-const FEATURES_START = OPENING_DURATION;
-const FEATURES_DURATION = 8 * FPS;
+// 主题颜色
+const THEME = {
+  primary: "#76B900",
+  background: "#0a0a0a",
+  text: "#ffffff",
+  muted: "#888888",
+};
 
-const DEMO_START = FEATURES_START + FEATURES_DURATION;
-const DEMO_DURATION = Math.ceil(97.227 * FPS);
+// 场景组件
+const OpeningScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-const CLOSING_START = DEMO_START + DEMO_DURATION;
-const CLOSING_DURATION = 10 * FPS;
-
-const TOTAL_FRAMES = CLOSING_START + CLOSING_DURATION;
-
-export const FinalVideo: React.FC = () => {
-  const { width, height } = useVideoConfig();
+  const logoScale = spring({ frame, fps, config: { damping: 12 } });
+  const titleOpacity = interpolate(frame, [30, 60], [0, 1], { extrapolateLeft: "clamp" });
 
   return (
-    <>
-      {/* 同步配音 */}
-      <Audio src={staticFile("audio/synced_voiceover.mp3")} volume={1} />
-
-      {/* 片头动画 */}
-      <Sequence from={OPENING_START} durationInFrames={OPENING_DURATION}>
-        <OpeningScene />
-      </Sequence>
-
-      {/* 功能亮点 */}
-      <Sequence from={FEATURES_START} durationInFrames={FEATURES_DURATION}>
-        <FeatureCardsScene />
-      </Sequence>
-
-      {/* 演示录屏 */}
-      <Sequence from={DEMO_START} durationInFrames={DEMO_DURATION}>
-        <Video
-          src={staticFile("recordings/full_demo.mp4")}
-          startFrom={DEMO_SKIP}  // 可选：跳过开头N帧
-          style={{ width, height, objectFit: "contain" }}
-        />
-      </Sequence>
-
-      {/* 片尾动画 */}
-      <Sequence from={CLOSING_START} durationInFrames={CLOSING_DURATION}>
-        <ClosingScene />
-      </Sequence>
-    </>
+    <AbsoluteFill style={{ backgroundColor: THEME.background, justifyContent: "center", alignItems: "center" }}>
+      <div style={{ transform: `scale(${logoScale})` }}>
+        <Img src={staticFile("images/logo.png")} style={{ width: 400 }} />
+      </div>
+      <h1 style={{ color: THEME.text, fontSize: 72, opacity: titleOpacity }}>
+        标题文字
+      </h1>
+    </AbsoluteFill>
   );
 };
 
-export const finalVideoConfig = {
-  id: "FinalVideo",
-  component: FinalVideo,
-  durationInFrames: TOTAL_FRAMES,
-  fps: FPS,
-  width: 1920,
-  height: 1080,
+// 主视频组件
+export const MainVideo: React.FC = () => {
+  return (
+    <AbsoluteFill>
+      <Audio src={staticFile("audio/synced_voiceover.mp3")} volume={1} />
+
+      <Sequence from={SCENES.opening.start * FPS} durationInFrames={SCENES.opening.duration * FPS}>
+        <OpeningScene />
+      </Sequence>
+
+      {/* 更多场景... */}
+    </AbsoluteFill>
+  );
 };
-```
-
-## 常用动画模式
-
-### Logo 弹性缩放
-
-```tsx
-const logoScale = spring({
-  frame,
-  fps,
-  config: { damping: 10, stiffness: 100 },
-});
-
-<div style={{ transform: `scale(${logoScale})` }}>Logo</div>
-```
-
-### 淡入效果
-
-```tsx
-const opacity = interpolate(frame, [0, 30], [0, 1], {
-  extrapolateRight: "clamp",
-});
-```
-
-### 打字机效果
-
-```tsx
-const text = "一站式多节点账户管理平台";
-const charsToShow = Math.floor(interpolate(frame, [0, 90], [0, text.length]));
-const displayText = text.slice(0, charsToShow);
-```
-
-### 发光效果
-
-```tsx
-const glowIntensity = interpolate(
-  Math.sin(frame * 0.1),
-  [-1, 1],
-  [0.3, 0.7]
-);
-
-<div style={{ filter: `drop-shadow(0 0 ${20 * glowIntensity}px #2563eb)` }}>
 ```
 
 ## 渲染命令
@@ -165,24 +380,33 @@ const glowIntensity = interpolate(
 npm run studio
 
 # 渲染输出
-npx remotion render src/index.ts FinalVideo out/final.mp4
+npx remotion render src/index.ts VideoId out/video.mp4
+
+# 指定浏览器路径
+npx remotion render src/index.ts VideoId out/video.mp4 \
+  --browser-executable="$HOME/.cache/remotion/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+
+# 减少并发 (内存不足时)
+npx remotion render src/index.ts VideoId out/video.mp4 --concurrency=4
 ```
 
-## package.json 配置
+## 后期处理
 
-```json
-{
-  "scripts": {
-    "studio": "remotion studio src/index.ts",
-    "render:final": "remotion render src/index.ts FinalVideo out/final.mp4"
-  },
-  "dependencies": {
-    "remotion": "^4.0.409",
-    "@remotion/cli": "^4.0.409",
-    "@remotion/player": "^4.0.409",
-    "@remotion/transitions": "^4.0.409"
-  }
-}
+### 音量标准化
+
+```bash
+# 渲染后标准化音量
+ffmpeg -y -i out/video_raw.mp4 \
+  -af "loudnorm=I=-16:TP=-1.5:LRA=11" \
+  -c:v copy \
+  out/video_final.mp4
+```
+
+### 压缩优化
+
+```bash
+# 压缩视频 (保持质量)
+ffmpeg -i out/video.mp4 -c:v libx264 -crf 23 -preset medium -c:a copy out/video_compressed.mp4
 ```
 
 ## 项目文件结构
@@ -191,80 +415,27 @@ npx remotion render src/index.ts FinalVideo out/final.mp4
 src/
 ├── index.ts              # 入口文件
 ├── Root.tsx              # Composition 定义
-├── FinalVideo.tsx        # 主视频组件
-├── scenes/
-│   ├── OpeningScene.tsx  # 片头
-│   ├── FeatureCardsScene.tsx
-│   └── ClosingScene.tsx  # 片尾
-├── components/
+├── MainVideo.tsx         # 主视频组件
+├── scenes/               # 场景组件
+│   ├── OpeningScene.tsx
+│   ├── ContentScene.tsx
+│   └── ClosingScene.tsx
+├── components/           # 可复用组件
 │   ├── Background.tsx
 │   ├── AnimatedText.tsx
-│   └── FeatureCard.tsx
+│   ├── DataCard.tsx
+│   └── Logo.tsx
 └── utils/
-    └── colors.ts         # 颜色配置
+    ├── theme.ts          # 主题配置
+    └── animations.ts     # 动画工具函数
 ```
 
-## 跳过录屏开头
-
-录屏可能包含页面加载等待时间，可以使用 `startFrom` 跳过：
-
-```tsx
-// 跳过录屏开头 12 秒（360 帧）
-const DEMO_SKIP = 12 * FPS;
-const DEMO_ORIGINAL_DURATION = 97.227;
-const DEMO_DURATION = Math.ceil((DEMO_ORIGINAL_DURATION - 12) * FPS);
-
-<Video
-  src={staticFile("recordings/demo.mp4")}
-  startFrom={DEMO_SKIP}  // 从第 360 帧开始播放
-  style={{ width, height, objectFit: "contain" }}
-/>
-```
-
-**注意**: 跳过录屏开头后，配音时间线需要重新计算！
-
-```
-新公式: 录屏时间 - 跳过时间 + 前缀时长 = 最终时间
-示例: 录屏 20.8s - 12s + 18s = 26.8s
-```
-
-## 后期处理：音量标准化
-
-渲染完成后，使用 FFmpeg 标准化音量：
-
-```bash
-# 渲染原始视频
-npx remotion render src/index.ts FinalVideo out/final_raw.mp4
-
-# 音量标准化 (-16 LUFS)
-ffmpeg -i out/final_raw.mp4 -af "loudnorm=I=-16:TP=-1.5:LRA=11" -c:v copy out/final.mp4
-
-# 清理临时文件
-rm out/final_raw.mp4
-```
-
-### 为什么需要标准化？
-
-- edge-tts 不同片段音量可能不一致
-- 片头/片尾背景音乐与配音音量差异
-- 确保视频在不同设备上播放音量一致
-
-## 常见问题
-
-| 问题 | 解决方案 |
-|------|----------|
-| Chrome 下载失败 | `npx remotion browser ensure` |
-| 视频文件找不到 | 确保文件在 `public/` 目录下，使用 `staticFile()` 引用 |
-| 渲染内存不足 | 减少并发数：`--concurrency=4` |
-| 字体不显示 | 使用 `@fontsource` 或 `@remotion/google-fonts` 加载字体 |
-
-## 最终检查清单
+## 检查清单
 
 - [ ] 音频文件存在且路径正确
-- [ ] 视频文件存在且路径正确
+- [ ] 图片文件存在且路径正确
 - [ ] 时间线计算正确（总帧数 = 各段之和）
 - [ ] 场景之间无缝隙
 - [ ] 字体正确加载
 - [ ] 渲染输出无错误
-- [ ] 配音无空白间隙
 - [ ] 音量已标准化

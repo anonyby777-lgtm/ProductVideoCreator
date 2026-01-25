@@ -5,24 +5,44 @@ node_modules/
 venv/
 __pycache__/
 *.pyc
+*.pyo
+.Python
+pip-log.txt
 
 # Output
 out/
 *.mp4
 *.webm
 *.mp3
+*.wav
 
-# Recordings (large files)
+# Recordings and Audio (large files)
 public/recordings/
 public/audio/
+
+# Remotion cache
+.remotion/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
+*~
 
 # Logs
 *.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Build
+dist/
+build/

@@ -1,0 +1,74 @@
+{
+  "version": "V2",
+  "voice": "zh-CN-YunjianNeural",
+  "total_duration": 85,
+  "segments": [
+    {
+      "index": 0,
+      "file": "vo_00.mp3",
+      "start_time": 0.5,
+      "target_duration": 7.0,
+      "actual_duration": 6.264,
+      "text": "从一个小餐厅的梦想，到改变世界的科技巨头。这是 NVIDIA...",
+      "full_text": "从一个小餐厅的梦想，到改变世界的科技巨头。这是 NVIDIA 的传奇故事。",
+      "char_count": 32,
+      "rate": "+14%"
+    },
+    {
+      "index": 1,
+      "file": "vo_01.mp3",
+      "start_time": 8.5,
+      "target_duration": 13.0,
+      "actual_duration": 11.808,
+      "text": "1993年，三位年轻工程师在加州的一家餐厅相遇。黄仁勋、克里...",
+      "full_text": "1993年，三位年轻工程师在加州的一家餐厅相遇。黄仁勋、克里斯·马拉科夫斯基和柯蒂斯·普里姆，怀揣着图形计算的梦想，用四万美元启动资金，创立了 NVIDIA。",
+      "char_count": 71,
+      "rate": "+35%"
+    },
+    {
+      "index": 2,
+      "file": "vo_02.mp3",
+      "start_time": 22.5,
+      "target_duration": 15.0,
+      "actual_duration": 13.824,
+      "text": "1999年，NVIDIA 发布了革命性的 GeForce 2...",
+      "full_text": "1999年，NVIDIA 发布了革命性的 GeForce 256，首次提出 GPU 概念。图形处理器从此诞生，为游戏、设计和科学计算带来前所未有的视觉体验。这一创新奠定了 NVIDIA 在图形领域的霸主地位。",
+      "char_count": 90,
+      "rate": "+35%"
+    },
+    {
+      "index": 3,
+      "file": "vo_03.mp3",
+      "start_time": 38.5,
+      "target_duration": 13.0,
+      "actual_duration": 12.312,
+      "text": "2006年，NVIDIA 推出 CUDA 平台，将 GPU ...",
+      "full_text": "2006年，NVIDIA 推出 CUDA 平台，将 GPU 的强大算力释放到通用计算领域。科学家、研究人员第一次能够利用显卡进行大规模并行计算，这为人工智能时代的到来埋下了种子。",
+      "char_count": 78,
+      "rate": "+35%"
+    },
+    {
+      "index": 4,
+      "file": "vo_04.mp3",
+      "start_time": 52.5,
+      "target_duration": 19.0,
+      "actual_duration": 17.736,
+      "text": "2020年代，人工智能浪潮席卷全球。NVIDIA 的 GPU...",
+      "full_text": "2020年代，人工智能浪潮席卷全球。NVIDIA 的 GPU 成为训练大型语言模型的核心硬件。从 ChatGPT 到自动驾驶，全球超过百分之八十的 AI 计算都运行在 NVIDIA 芯片之上。2023年，NVIDIA 市值突破一万亿美元，成为全球首家万亿市值芯片公司。",
+      "char_count": 116,
+      "rate": "+35%"
+    },
+    {
+      "index": 5,
+      "file": "vo_05.mp3",
+      "start_time": 72.5,
+      "target_duration": 12.0,
+      "actual_duration": 10.176,
+      "text": "从车库创业到万亿帝国，NVIDIA 用三十年时间证明：创新的...",
+      "full_text": "从车库创业到万亿帝国，NVIDIA 用三十年时间证明：创新的力量能够改变世界。用芯片重新定义未来，这就是 NVIDIA 的故事。",
+      "char_count": 57,
+      "rate": "+18%"
+    }
+  ],
+  "validation_passed": true
+}

@@ -1,0 +1,60 @@
+{
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "total_duration": 85,
+  "segments": [
+    {
+      "index": 0,
+      "file": "vo_00.mp3",
+      "start_time": 0.5,
+      "end_time": 7.5,
+      "target_duration": 7.0,
+      "actual_duration": 6.648,
+      "text": "英伟达，从一个车库创业公司，成长为全球市值最高的芯片巨头。"
+    },
+    {
+      "index": 1,
+      "file": "vo_01.mp3",
+      "start_time": 8.5,
+      "end_time": 21.5,
+      "target_duration": 13.0,
+      "actual_duration": 12.192,
+      "text": "一九九三年，三十岁的黄仁勋与两位工程师好友，在丹尼斯餐厅的一次聚会上，决定创造能让电脑呈现逼真3D图形的芯片。凭借四万美元启动资金，英伟达诞生了。"
+    },
+    {
+      "index": 2,
+      "file": "vo_02.mp3",
+      "start_time": 22.5,
+      "end_time": 37.5,
+      "target_duration": 15.0,
+      "actual_duration": 14.904,
+      "text": "一九九九年，英伟达发布全球第一款图形处理器 GeForce 256，正式定义了 GPU 这一全新品类。同年，公司以每股十二美元上市。从此，GPU 开始改变游戏、设计和科学计算的面貌。"
+    },
+    {
+      "index": 3,
+      "file": "vo_03.mp3",
+      "start_time": 38.5,
+      "end_time": 51.5,
+      "target_duration": 13.0,
+      "actual_duration": 12.624,
+      "text": "二零零六年，英伟达推出 CUDA 架构，让 GPU 不再只是显卡，而是通用计算的超级引擎。科学家们开始用它模拟气候、研究基因、训练人工智能。"
+    },
+    {
+      "index": 4,
+      "file": "vo_04.mp3",
+      "start_time": 52.5,
+      "end_time": 71.5,
+      "target_duration": 19.0,
+      "actual_duration": 20.424,
+      "text": "二零二零年，英伟达超越英特尔，成为美国市值最高的芯片公司。人工智能浪潮席卷全球，英伟达的 GPU 成为训练大模型的核心算力。二零二三年，公司市值突破一万亿美元，成为全球首家达成这一里程碑的芯片企业。如今，全球超过百分之八十的 AI 计算都运行在英伟达的芯片上。"
+    },
+    {
+      "index": 5,
+      "file": "vo_05.mp3",
+      "start_time": 72.5,
+      "end_time": 84.0,
+      "target_duration": 11.5,
+      "actual_duration": 9.768,
+      "text": "三十年前的一个创意，如今已成为推动人类科技进步的核心引擎。英伟达，用芯片重新定义未来。"
+    }
+  ]
+}

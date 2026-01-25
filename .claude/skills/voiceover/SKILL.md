@@ -1,6 +1,6 @@
 ---
 name: voiceover
-description: 使用 edge-tts 生成中文配音。当需要为视频生成语音旁白、基于时间线同步配音时使用。支持语速调整和多段音频合并。
+description: 使用 edge-tts 生成中文配音。当需要为视频生成语音旁白、基于时间线同步配音时使用。支持语速调整、多种声音选择和配音验证。
 argument-hint: [配音文案或时间线文件]
 ---
 
@@ -13,7 +13,29 @@ argument-hint: [配音文案或时间线文件]
 | edge-tts | 免费、音质好、支持中文 | 需要网络 |
 | Azure TTS | 更多声音选择、更稳定 | 需要付费 |
 
-**推荐**: edge-tts (zh-CN-XiaoxiaoNeural)
+**推荐**: edge-tts
+
+## 声音选择
+
+### 中文声音列表
+
+| 声音 ID | 性别 | 风格 | 适用场景 |
+|---------|------|------|----------|
+| zh-CN-XiaoxiaoNeural | 女 | 温暖亲切 | 产品介绍、教程 |
+| zh-CN-YunxiNeural | 男 | 专业稳重 | 企业宣传、正式场合 |
+| zh-CN-YunjianNeural | 男 | 激情活力 | 科技发布、激励视频 |
+| zh-CN-XiaoyiNeural | 女 | 年轻活泼 | 创意内容、轻松主题 |
+| zh-CN-YunyangNeural | 男 | 新闻播报 | 资讯类、严肃主题 |
+
+### 声音选择建议
+
+| 视频类型 | 推荐声音 |
+|----------|----------|
+| 产品演示 | XiaoxiaoNeural (女) |
+| 公司介绍 | YunxiNeural (男) 或 XiaoxiaoNeural |
+| 科技历程 | **YunjianNeural (男)** - 有激情感 |
+| 教程类 | XiaoxiaoNeural (女) |
+| 发布会风格 | YunjianNeural (男) |
 
 ## 时间线计算
 
@@ -25,54 +47,184 @@ DEMO_START = OPENING_DURATION + FEATURES_DURATION
 final_time = recording_time + DEMO_START
 ```
 
-### 示例
+### 图文视频时间线
+
+对于图文展示型视频，时间线由分镜直接定义：
 
 ```python
-# 视频结构
-OPENING_DURATION = 10   # 片头 10 秒
-FEATURES_DURATION = 8   # 功能亮点 8 秒
-DEMO_START = 18         # 录屏从第 18 秒开始
+# 场景时间配置
+SCENES = {
+    "opening": {"start": 0, "duration": 8},
+    "scene_1": {"start": 8, "duration": 14},
+    "scene_2": {"start": 22, "duration": 16},
+    # ...
+}
 
-# 录屏时间线
-# 录屏 20.8 秒：页面加载完成
-# → 最终视频时间：20.8 + 18 = 38.8 秒
-
-# 配音定义
+# 配音定义 - 直接基于场景时间
 VOICEOVER_SEGMENTS = [
-    # 片头配音 (不需要偏移)
-    (1.0, 5.0, "欢迎使用产品名"),
-
-    # 演示配音 (需要加 DEMO_START 偏移)
-    (38.8, 47.0, "在统计页面，您可以..."),
+    (0.5, 7.5, "片头配音..."),      # 场景 opening 内
+    (8.5, 21.5, "场景1配音..."),    # 场景 scene_1 内
+    (22.5, 37.5, "场景2配音..."),   # 场景 scene_2 内
 ]
 ```
 
-## 配音脚本模板
+## 配音验证机制 (重要)
+
+### 自动化验证函数
+
+```python
+def validate_voiceover(segments, total_duration):
+    """
+    验证配音时间线
+    返回: (是否通过, 问题列表)
+    """
+    issues = []
+
+    for i, seg in enumerate(segments):
+        # 检查1: 配音是否超出场景时长
+        actual_end = seg["start_time"] + seg["actual_duration"]
+        if seg["actual_duration"] > seg["target_duration"] + 0.5:
+            issues.append({
+                "type": "duration_exceeded",
+                "segment": i,
+                "message": f"片段{i}: 实际({seg['actual_duration']:.1f}s) > 目标({seg['target_duration']:.1f}s)",
+                "severity": "warning"
+            })
+
+        # 检查2: 配音是否与下一段重叠
+        if i < len(segments) - 1:
+            next_start = segments[i+1]["start_time"]
+            if actual_end > next_start:
+                issues.append({
+                    "type": "overlap",
+                    "segment": i,
+                    "message": f"片段{i}和{i+1}重叠: {actual_end:.1f}s > {next_start:.1f}s",
+                    "severity": "error"
+                })
+
+    # 检查3: 最后一段是否超出视频时长
+    last_seg = segments[-1]
+    last_end = last_seg["start_time"] + last_seg["actual_duration"]
+    if last_end > total_duration + 1:
+        issues.append({
+            "type": "exceeds_video",
+            "message": f"配音结束({last_end:.1f}s) > 视频时长({total_duration}s)",
+            "severity": "error"
+        })
+
+    # 检查4: 空白间隙
+    for i in range(len(segments) - 1):
+        current_end = segments[i]["start_time"] + segments[i]["actual_duration"]
+        next_start = segments[i+1]["start_time"]
+        gap = next_start - current_end
+        if gap > 3:
+            issues.append({
+                "type": "large_gap",
+                "segment": i,
+                "message": f"片段{i}和{i+1}之间有{gap:.1f}s空白",
+                "severity": "warning"
+            })
+
+    passed = not any(issue["severity"] == "error" for issue in issues)
+    return passed, issues
+```
+
+### 验证报告输出
+
+```python
+def print_validation_report(segments, total_duration):
+    """打印配音验证报告"""
+    passed, issues = validate_voiceover(segments, total_duration)
+
+    print("╔" + "═" * 58 + "╗")
+    print("║" + "配音验证报告".center(54) + "║")
+    print("╠" + "═" * 58 + "╣")
+    print("║ 片段 │ 开始   │ 目标时长 │ 实际时长 │ 状态       ║")
+    print("╠" + "═" * 58 + "╣")
+
+    for i, seg in enumerate(segments):
+        status = "✅ OK" if seg["actual_duration"] <= seg["target_duration"] + 0.5 else "⚠️ 超时"
+        print(f"║  {i:2d}  │ {seg['start_time']:5.1f}s │  {seg['target_duration']:5.1f}s  │  {seg['actual_duration']:5.1f}s  │ {status:10s} ║")
+
+    print("╠" + "═" * 58 + "╣")
+
+    if passed:
+        print("║ ✅ 验证通过                                            ║")
+    else:
+        print("║ ❌ 验证失败，请检查以下问题:                            ║")
+        for issue in issues:
+            if issue["severity"] == "error":
+                print(f"║   ❌ {issue['message'][:50]:50s} ║")
+
+    print("╚" + "═" * 58 + "╝")
+
+    return passed
+```
+
+## 完整配音脚本模板 (V2)
 
 ```python
 #!/usr/bin/env python3
+"""
+配音生成脚本 V2 - 包含验证机制
+"""
+
 import asyncio
-import edge_tts
 import subprocess
 from pathlib import Path
+import json
 
-VOICE = "zh-CN-XiaoxiaoNeural"
+# ========== 配置 ==========
+VOICE = "zh-CN-YunjianNeural"  # 科技感男声
 OUTPUT_DIR = Path("public/audio")
+TOTAL_DURATION = 85  # 视频总时长
 
-# 配音段落定义
+# 配音段落定义 (开始时间, 结束时间, 配音文字)
 VOICEOVER_SEGMENTS = [
-    # (开始时间, 结束时间, 配音文字)
-    (1.0, 5.0, "配音内容"),
+    (0.5, 7.5, "配音内容1"),
+    (8.5, 21.5, "配音内容2"),
+    # ...
 ]
 
-async def generate_segment(index, text, start, end):
+# ========== 工具函数 ==========
+def get_audio_duration(file_path):
+    """获取音频时长"""
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", str(file_path)],
+        capture_output=True, text=True
+    )
+    return float(result.stdout.strip())
+
+def validate_voiceover(segments, total_duration):
+    """验证配音时间线"""
+    issues = []
+
+    for i, seg in enumerate(segments):
+        # 检查时长
+        if seg["actual_duration"] > seg["target_duration"] + 0.5:
+            issues.append(f"⚠️ 片段{i}: 超时 {seg['actual_duration'] - seg['target_duration']:.1f}s")
+
+        # 检查重叠
+        if i < len(segments) - 1:
+            actual_end = seg["start_time"] + seg["actual_duration"]
+            next_start = segments[i+1]["start_time"]
+            if actual_end > next_start:
+                issues.append(f"❌ 片段{i}和{i+1}重叠")
+
+    return len([i for i in issues if i.startswith("❌")]) == 0, issues
+
+# ========== 生成函数 ==========
+async def generate_segment(index, start, end, text):
     """生成单个配音片段"""
+    import edge_tts
+
     output_file = OUTPUT_DIR / f"vo_{index:02d}.mp3"
     duration_target = end - start
 
-    # 根据目标时长调整语速
+    # 计算语速
     char_count = len(text.replace(" ", "").replace("，", "").replace("。", ""))
-    natural_duration = char_count / 4.0  # 每秒约4个中文字
+    natural_duration = char_count / 4.0
 
     if natural_duration > duration_target:
         rate_adjust = min(35, int((natural_duration / duration_target - 1) * 100))
@@ -80,17 +232,24 @@ async def generate_segment(index, text, start, end):
     else:
         rate = "+0%"
 
+    # 生成配音
     communicate = edge_tts.Communicate(text=text, voice=VOICE, rate=rate)
     await communicate.save(str(output_file))
 
+    actual_duration = get_audio_duration(output_file)
+
     return {
+        "index": index,
         "file": output_file.name,
         "start_time": start,
-        "actual_duration": get_audio_duration(output_file),
+        "target_duration": duration_target,
+        "actual_duration": actual_duration,
+        "text": text[:20] + "...",
+        "rate": rate,
     }
 
-def merge_with_timing(segments, total_duration):
-    """按时间线合并音频"""
+def merge_audio(segments):
+    """合并音频"""
     filter_parts = []
     inputs = []
 
@@ -102,13 +261,70 @@ def merge_with_timing(segments, total_duration):
     mix_inputs = "".join([f"[a{i}]" for i in range(len(segments))])
     filter_parts.append(f"{mix_inputs}amix=inputs={len(segments)}:duration=longest[out]")
 
+    output_file = OUTPUT_DIR / "synced_voiceover.mp3"
+
     subprocess.run([
         "ffmpeg", "-y", *inputs,
         "-filter_complex", "".join(filter_parts),
         "-map", "[out]",
-        "-t", str(total_duration),
-        str(OUTPUT_DIR / "synced_voiceover.mp3")
-    ])
+        "-t", str(TOTAL_DURATION),
+        str(output_file)
+    ], capture_output=True)
+
+    return output_file
+
+# ========== 主函数 ==========
+async def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 50)
+    print(f"配音生成 - 声音: {VOICE}")
+    print("=" * 50)
+
+    # 1. 生成配音
+    print("\n[1/3] 生成配音片段...")
+    segments = []
+    for i, (start, end, text) in enumerate(VOICEOVER_SEGMENTS):
+        seg = await generate_segment(i, start, end, text)
+        segments.append(seg)
+        print(f"  ✓ 片段{i}: {seg['actual_duration']:.1f}s (目标: {seg['target_duration']:.1f}s) 语速: {seg['rate']}")
+
+    # 2. 验证
+    print("\n[2/3] 验证配音...")
+    passed, issues = validate_voiceover(segments, TOTAL_DURATION)
+
+    if issues:
+        for issue in issues:
+            print(f"  {issue}")
+
+    if not passed:
+        print("\n❌ 验证失败，请检查配音时间线")
+        return
+    else:
+        print("  ✅ 验证通过")
+
+    # 3. 合并
+    print("\n[3/3] 合并音频...")
+    output = merge_audio(segments)
+    final_duration = get_audio_duration(output)
+    print(f"  ✓ 输出: {output}")
+    print(f"  ✓ 时长: {final_duration:.1f}s")
+
+    # 保存元数据
+    metadata = {
+        "voice": VOICE,
+        "total_duration": TOTAL_DURATION,
+        "segments": segments,
+    }
+    with open(OUTPUT_DIR / "voiceover_metadata.json", "w", encoding="utf-8") as f:
+        json.dump(metadata, f, ensure_ascii=False, indent=2)
+
+    print("\n" + "=" * 50)
+    print("配音生成完成!")
+    print("=" * 50)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## 语速控制
@@ -153,119 +369,20 @@ ffmpeg -i vo_01.mp3 -i vo_02.mp3 -i vo_03.mp3 \
   -map "[out]" output.mp3
 ```
 
-## 配音验证检查清单
-
-- [ ] 每段配音的实际时长 ≤ 目标时长
-- [ ] 配音开始时间与画面事件匹配
-- [ ] 无配音重叠
-- [ ] 总时长与视频时长匹配
-
-### 时长获取
-
-```python
-import subprocess
-
-def get_audio_duration(file_path):
-    result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=noprint_wrappers=1:nokey=1", str(file_path)],
-        capture_output=True, text=True
-    )
-    return float(result.stdout.strip())
-```
-
-## 避免配音空白间隙
-
-**重要**: 确保配音段覆盖整个视频，不留空白！
-
-### 问题示例
-
-```python
-# 错误：28-39秒有11秒空白
-VOICEOVER_SEGMENTS = [
-    (19.0, 28.0, "让我们来看看演示"),
-    (39.0, 47.5, "统计页面展示..."),  # 中间11秒无配音！
-]
-```
-
-### 解决方案
-
-```python
-# 正确：填补空白
-VOICEOVER_SEGMENTS = [
-    (19.0, 26.0, "让我们来看看演示"),
-    (27.0, 38.0, "系统正在加载统计数据..."),  # 填补空白
-    (39.0, 47.0, "统计页面展示..."),
-]
-```
-
-### 检查方法
-
-```python
-# 检查配音段之间是否有大于2秒的空白
-for i in range(len(segments) - 1):
-    gap = segments[i+1][0] - segments[i][1]
-    if gap > 2:
-        print(f"警告 空白: {segments[i][1]}s - {segments[i+1][0]}s ({gap}秒)")
-```
-
 ## 音量标准化
-
-配音合成后可能存在音量不一致问题，需要标准化：
-
-### 使用 FFmpeg loudnorm
 
 ```bash
 # 标准化到 -16 LUFS（广播标准）
 ffmpeg -i input.mp4 -af "loudnorm=I=-16:TP=-1.5:LRA=11" -c:v copy output.mp4
-
-# 参数说明：
-# I=-16: 目标响度 (LUFS)
-# TP=-1.5: 真峰值上限 (dB)
-# LRA=11: 响度范围 (LU)
-```
-
-## 跳过录屏开头的时间计算
-
-如果使用 Remotion `startFrom` 跳过录屏开头：
-
-```python
-# 跳过录屏开头 12 秒
-DEMO_SKIP = 12
-DEMO_START = 18  # 片头 + 功能亮点
-
-# 新公式：录屏时间 - 跳过时间 + 前缀时长 = 最终时间
-final_time = recording_time - DEMO_SKIP + DEMO_START
-
-# 示例：录屏 20.8 秒页面加载 → 最终视频 26.8 秒
-# 20.8 - 12 + 18 = 26.8
-```
-
-## 网络错误处理
-
-edge-tts 依赖网络，需要重试机制：
-
-```python
-async def generate_with_retry(text, output_file, max_retries=3):
-    for attempt in range(max_retries):
-        try:
-            communicate = edge_tts.Communicate(text=text, voice=VOICE)
-            await communicate.save(str(output_file))
-            return True
-        except Exception as e:
-            if attempt < max_retries - 1:
-                await asyncio.sleep(2)
-            else:
-                print(f"生成失败: {e}")
-                return False
 ```
 
 ## 常见问题
 
 | 问题 | 解决方案 |
 |------|----------|
-| 配音和画面不同步 | 检查时间偏移计算，特别是是否跳过了录屏开头 |
-| 配音语速过快/过慢 | 调整 rate 参数或精简/扩展文字 |
-| 配音段之间有空白 | 添加过渡说明填补空白 |
-| 音量不一致 | 使用 FFmpeg loudnorm 滤镜标准化 |
-| 网络连接失败 | 添加重试机制，或改用 Azure TTS |
+| 配音和画面不同步 | 检查时间偏移计算 |
+| 配音语速过快 | 精简文字或降低 rate |
+| 配音段重叠 | 调整开始时间或缩短文字 |
+| 空白间隙过大 | 添加过渡说明填补 |
+| 音量不一致 | 使用 FFmpeg loudnorm |
+| 网络失败 | 添加重试机制 |
