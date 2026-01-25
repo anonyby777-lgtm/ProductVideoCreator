@@ -2,14 +2,16 @@
 
 **[中文文档](README_zh.md)**
 
-A standard Claude Code Skills toolkit for automated product introduction video generation. Creates professional videos with animated intros, screen recordings, synchronized voiceovers, and animated outros.
+A standard Claude Code Skills toolkit for automated product video generation. Supports multiple video types: screen recording demos, image-based slideshows, and hybrid productions.
 
 ## Features
 
+- **Multiple Video Types** - Demo (screen recording), Slideshow (image-based), Mixed (hybrid)
 - **Storyboard-First Workflow** - Always get user confirmation before production
-- **Automated Browser Recording** - Playwright-based screen capture with timeline tracking
-- **Synchronized Voiceover** - edge-tts powered Chinese TTS with precise timing
-- **Professional Composition** - Remotion-based video assembly with animations
+- **Voice Selection** - 5 Chinese voice options for different content styles
+- **Voiceover Validation** - Automatic detection of duration/overlap/gap issues
+- **Advanced Animations** - Spring physics, glow effects, particle systems
+- **Professional Composition** - Remotion-based video assembly
 
 ## Tech Stack
 
@@ -17,8 +19,9 @@ A standard Claude Code Skills toolkit for automated product introduction video g
 |-----------|------------|---------|
 | Video Composition | Remotion | React-based video rendering |
 | Screen Recording | Playwright | Browser automation & capture |
-| Text-to-Speech | edge-tts | Free Chinese voice synthesis |
-| Audio Processing | FFmpeg | Audio merging & timing |
+| Text-to-Speech | edge-tts | Free Chinese voice synthesis (5 voices) |
+| Audio Processing | FFmpeg | Audio merging, timing & normalization |
+| Font Rendering | @remotion/google-fonts | Consistent Chinese font display |
 
 ## Project Structure
 
@@ -27,52 +30,69 @@ ProductVideoCreator/
 ├── .claude/
 │   └── skills/                 # Standard Claude Code skills
 │       ├── product-video/      # Main workflow entry
-│       │   └── SKILL.md
 │       ├── storyboard/         # Storyboard design
-│       │   └── SKILL.md
 │       ├── recording/          # Browser recording
-│       │   └── SKILL.md
-│       ├── voiceover/          # Voice generation
-│       │   └── SKILL.md
-│       └── compositing/        # Video composition
-│           └── SKILL.md
+│       ├── voiceover/          # Voice generation + validation
+│       ├── compositing/        # Video composition + animations
+│       └── asset-collection/   # Image/logo collection
 ├── templates/                  # Reusable templates
-│   ├── storyboard-template.json
-│   ├── recording-script.js
-│   ├── voiceover-script.py
-│   └── FinalVideo.tsx
-└── examples/
-    └── ldap-manager/           # Real-world example
+└── nvidia-video/               # Demo: NVIDIA history video
+    ├── src/                    # V1 & V2 video components
+    ├── public/images/          # Collected assets
+    └── COMPARISON_REPORT.md    # V1 vs V2 analysis
 ```
 
 ## Available Skills
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| product-video | `/product-video` | Main entry point for video creation workflow |
+| product-video | `/product-video` | Main entry - supports demo/slideshow/mixed types |
 | storyboard | `/storyboard` | Design storyboard and voiceover scripts |
 | recording | `/recording` | Browser automation and screen recording |
-| voiceover | `/voiceover` | Chinese TTS generation with timeline sync |
-| compositing | `/compositing` | Remotion-based video composition |
+| voiceover | `/voiceover` | TTS generation with validation mechanism |
+| compositing | `/compositing` | Video composition with advanced animations |
+| asset-collection | `/asset-collection` | Collect images from royalty-free sources |
 
-## Key Lessons Learned
+## Video Types
 
-| Problem | Solution |
-|---------|----------|
-| Audio-video sync issues | Record timeline events, add offset to voiceover |
-| Multiple reworks | **Must** confirm storyboard before recording |
-| Multi-segment editing | Single continuous recording |
-| Time calculation errors | `final_time = recording_time + intro_duration` |
+| Type | Use Case | Core Assets |
+|------|----------|-------------|
+| **Demo** | Software tutorials, feature demos | Playwright screen recording |
+| **Slideshow** | Company intro, product history | Images + text animations |
+| **Mixed** | Product promos | Recording + images + animations |
 
-## Workflow
+## Voice Options
 
-```
-Storyboard → User Confirmation → Recording → Voiceover → Composition → Review
-```
+| Voice ID | Gender | Style | Best For |
+|----------|--------|-------|----------|
+| XiaoxiaoNeural | Female | Warm, friendly | Tutorials, product intros |
+| YunxiNeural | Male | Professional | Enterprise content |
+| **YunjianNeural** | Male | Energetic | Tech content, launches |
+| XiaoyiNeural | Female | Youthful | Creative content |
+| YunyangNeural | Male | News anchor | Formal announcements |
+
+## Voiceover Validation
+
+The toolkit automatically validates voiceover timing:
+
+- Duration check: Actual ≤ Target + 0.5s
+- Overlap detection: No segment overlap
+- Gap detection: Warns if gap > 3s
+- Boundary check: Total ≤ Video duration
+
+## Demo Project
+
+The `nvidia-video/` directory contains a complete NVIDIA company history video demo:
+
+- **V1**: Basic implementation (score: 6.6/10)
+- **V2**: Optimized with YunjianNeural voice, particles, glow effects (score: 8.6/10)
+- **30% improvement** through skills optimization
+
+See `nvidia-video/COMPARISON_REPORT.md` for detailed analysis.
 
 ## Installation
 
-### 1. Clone this repository into your project
+### 1. Clone this repository
 
 ```bash
 # Option A: Clone as submodule
@@ -87,7 +107,7 @@ cp -r ProductVideoCreator/.claude/skills .claude/
 **Node.js Dependencies**
 
 ```bash
-npm install remotion @remotion/cli @remotion/player @remotion/transitions playwright
+npm install remotion @remotion/cli @remotion/player @remotion/google-fonts playwright
 ```
 
 **Python Dependencies**
@@ -111,29 +131,39 @@ npx playwright install chromium
 Once the skills are in your project's `.claude/skills/` directory, Claude Code will automatically discover them.
 
 ```bash
-# Start a video creation workflow
-/product-video MyProduct
+# Create a demo video (screen recording)
+/product-video MyApp demo
+
+# Create a slideshow video (image-based)
+/product-video "Company History" slideshow
 
 # Or ask Claude directly
 "Create a product introduction video for my web application"
 ```
 
-## Video Structure
+## Workflow
 
-| Section | Duration | Content |
-|---------|----------|---------|
-| Opening | 8-12s | Logo animation + product name + tagline |
-| Features | 6-10s | Feature cards showcase |
-| Demo | 60-120s | Screen recording demonstration |
-| Closing | 8-12s | Logo + slogan + call-to-action |
-
-## Example Output
-
-The `examples/ldap-manager/` directory contains a complete real-world example:
-- 2-minute product introduction video
-- Full storyboard and timeline
-- Recording script and voiceover script
-- Final Remotion composition
+```
+┌─────────────────────────────────────────────────────┐
+│ Phase 1: Storyboard Design                          │
+│ └── User confirmation required before proceeding    │
+├─────────────────────────────────────────────────────┤
+│ Phase 2: Asset Preparation                          │
+│ ├── [demo] Playwright screen recording              │
+│ ├── [slideshow] Image collection                    │
+│ └── [mixed] Both recording + images                 │
+├─────────────────────────────────────────────────────┤
+│ Phase 3: Voiceover Generation                       │
+│ ├── TTS with voice selection                        │
+│ └── Automatic validation                            │
+├─────────────────────────────────────────────────────┤
+│ Phase 4: Video Composition                          │
+│ ├── Remotion rendering with animations              │
+│ └── Audio normalization                             │
+├─────────────────────────────────────────────────────┤
+│ Phase 5: Review & Delivery                          │
+└─────────────────────────────────────────────────────┘
+```
 
 ## License
 
