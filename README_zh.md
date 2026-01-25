@@ -2,7 +2,7 @@
 
 **[English](README.md)**
 
-基于 LDAP Manager 视频制作实践总结的产品介绍视频自动化生成技能包。
+标准 Claude Code Skills 技能包，用于自动化生成产品介绍视频。基于 LDAP Manager 视频制作实践总结。
 
 ## 核心流程
 
@@ -23,14 +23,19 @@
 
 ```
 ProductVideoCreator/
-├── skills/                     # Agent 技能定义
-│   ├── product-video.md        # 主技能入口
-│   ├── storyboard.md           # 分镜脚本技能
-│   ├── recording.md            # 录屏技能
-│   ├── voiceover.md            # 配音生成技能
-│   └── compositing.md          # 视频合成技能
+├── .claude/
+│   └── skills/                 # 标准 Claude Code 技能目录
+│       ├── product-video/      # 主技能入口
+│       │   └── SKILL.md
+│       ├── storyboard/         # 分镜脚本技能
+│       │   └── SKILL.md
+│       ├── recording/          # 录屏技能
+│       │   └── SKILL.md
+│       ├── voiceover/          # 配音生成技能
+│       │   └── SKILL.md
+│       └── compositing/        # 视频合成技能
+│           └── SKILL.md
 ├── templates/                  # 可复用模板
-│   ├── project-structure/      # 项目初始化模板
 │   ├── storyboard-template.json
 │   ├── recording-script.js
 │   ├── voiceover-script.py
@@ -38,6 +43,16 @@ ProductVideoCreator/
 └── examples/                   # 示例参考
     └── ldap-manager/           # LDAP Manager 视频示例
 ```
+
+## 可用技能
+
+| 技能 | 命令 | 说明 |
+|------|------|------|
+| product-video | `/product-video` | 视频制作主流程入口 |
+| storyboard | `/storyboard` | 分镜脚本和配音文案设计 |
+| recording | `/recording` | 浏览器自动化录屏 |
+| voiceover | `/voiceover` | 中文配音生成与时间线同步 |
+| compositing | `/compositing` | Remotion 视频合成 |
 
 ## 经验教训总结
 
@@ -92,7 +107,7 @@ ProductVideoCreator/
 for i in range(len(segments) - 1):
     gap = segments[i+1][0] - segments[i][1]
     if gap > 2:
-        print(f"⚠️ 空白: {segments[i][1]}s - {segments[i+1][0]}s")
+        print(f"警告 空白: {segments[i][1]}s - {segments[i+1][0]}s")
 ```
 
 ### 6. 音量标准化
@@ -133,30 +148,27 @@ const DEMO_SKIP = 12 * FPS;  // 跳过 12 秒
 | 操作演示 | 60-120秒 | 完整功能演示录屏 |
 | 片尾 | 8-12秒 | 口号 + 行动号召 |
 
-## 使用方式
+## 安装使用
 
-### 安装技能
+### 1. 将技能添加到你的项目
 
 ```bash
-# 复制 skills 目录到 Claude Code 技能目录
-cp -r skills/* ~/.claude/skills/
+# 方式 A: 作为 submodule 添加
+git submodule add https://github.com/MatrixReligio/ProductVideoCreator.git
+
+# 方式 B: 复制 .claude/skills 到你的项目
+cp -r ProductVideoCreator/.claude/skills .claude/
 ```
 
-### 调用技能
+### 2. 安装依赖
 
-```
-/product-video create [项目名称]
-```
-
-## 依赖安装
-
-### Node.js 依赖
+**Node.js 依赖**
 
 ```bash
 npm install remotion @remotion/cli @remotion/player @remotion/transitions playwright
 ```
 
-### Python 依赖
+**Python 依赖**
 
 ```bash
 python -m venv venv
@@ -164,7 +176,7 @@ source venv/bin/activate
 pip install edge-tts
 ```
 
-### 系统依赖
+**系统依赖**
 
 ```bash
 # macOS
@@ -173,3 +185,19 @@ brew install ffmpeg
 # 安装 Playwright 浏览器
 npx playwright install chromium
 ```
+
+## 使用方式
+
+技能放入项目的 `.claude/skills/` 目录后，Claude Code 会自动发现并加载。
+
+```bash
+# 启动视频制作流程
+/product-video 我的产品
+
+# 或直接询问 Claude
+"为我的 Web 应用创建一个产品介绍视频"
+```
+
+## 许可证
+
+ISC

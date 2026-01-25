@@ -2,7 +2,7 @@
 
 **[中文文档](README_zh.md)**
 
-An AI Agent Skills toolkit for automated product introduction video generation. Creates professional videos with animated intros, screen recordings, synchronized voiceovers, and animated outros.
+A standard Claude Code Skills toolkit for automated product introduction video generation. Creates professional videos with animated intros, screen recordings, synchronized voiceovers, and animated outros.
 
 ## Features
 
@@ -24,12 +24,18 @@ An AI Agent Skills toolkit for automated product introduction video generation. 
 
 ```
 ProductVideoCreator/
-├── skills/                     # Agent skill definitions
-│   ├── product-video.md        # Main workflow entry
-│   ├── storyboard.md           # Storyboard design
-│   ├── recording.md            # Browser recording
-│   ├── voiceover.md            # Voice generation
-│   └── compositing.md          # Video composition
+├── .claude/
+│   └── skills/                 # Standard Claude Code skills
+│       ├── product-video/      # Main workflow entry
+│       │   └── SKILL.md
+│       ├── storyboard/         # Storyboard design
+│       │   └── SKILL.md
+│       ├── recording/          # Browser recording
+│       │   └── SKILL.md
+│       ├── voiceover/          # Voice generation
+│       │   └── SKILL.md
+│       └── compositing/        # Video composition
+│           └── SKILL.md
 ├── templates/                  # Reusable templates
 │   ├── storyboard-template.json
 │   ├── recording-script.js
@@ -38,6 +44,16 @@ ProductVideoCreator/
 └── examples/
     └── ldap-manager/           # Real-world example
 ```
+
+## Available Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| product-video | `/product-video` | Main entry point for video creation workflow |
+| storyboard | `/storyboard` | Design storyboard and voiceover scripts |
+| recording | `/recording` | Browser automation and screen recording |
+| voiceover | `/voiceover` | Chinese TTS generation with timeline sync |
+| compositing | `/compositing` | Remotion-based video composition |
 
 ## Key Lessons Learned
 
@@ -56,13 +72,25 @@ Storyboard → User Confirmation → Recording → Voiceover → Composition →
 
 ## Installation
 
-### Node.js Dependencies
+### 1. Clone this repository into your project
+
+```bash
+# Option A: Clone as submodule
+git submodule add https://github.com/MatrixReligio/ProductVideoCreator.git
+
+# Option B: Copy .claude/skills to your project
+cp -r ProductVideoCreator/.claude/skills .claude/
+```
+
+### 2. Install dependencies
+
+**Node.js Dependencies**
 
 ```bash
 npm install remotion @remotion/cli @remotion/player @remotion/transitions playwright
 ```
 
-### Python Dependencies
+**Python Dependencies**
 
 ```bash
 python -m venv venv
@@ -70,7 +98,7 @@ source venv/bin/activate
 pip install edge-tts
 ```
 
-### System Dependencies
+**System Dependencies**
 
 ```bash
 # macOS
@@ -80,9 +108,15 @@ npx playwright install chromium
 
 ## Usage
 
-1. Copy `skills/` to your Claude Code skills directory
-2. Create a new video project using templates
-3. Follow the workflow: Storyboard → Confirm → Record → Voiceover → Compose
+Once the skills are in your project's `.claude/skills/` directory, Claude Code will automatically discover them.
+
+```bash
+# Start a video creation workflow
+/product-video MyProduct
+
+# Or ask Claude directly
+"Create a product introduction video for my web application"
+```
 
 ## Video Structure
 

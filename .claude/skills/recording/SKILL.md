@@ -1,6 +1,7 @@
 ---
 name: recording
-description: 使用 Playwright 进行浏览器自动化录屏，记录精确时间线用于配音同步。
+description: 使用 Playwright 进行浏览器自动化录屏。当需要录制 Web 应用操作演示、生成带时间线的屏幕录像时使用。
+argument-hint: [目标URL]
 ---
 
 # 浏览器录屏技能

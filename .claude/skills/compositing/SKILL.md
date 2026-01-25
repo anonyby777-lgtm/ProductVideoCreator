@@ -1,6 +1,7 @@
 ---
 name: compositing
-description: 使用 Remotion 合成最终视频，组合片头、录屏、配音和片尾。
+description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果和时间线管理。
+argument-hint: [项目路径]
 ---
 
 # 视频合成技能
@@ -126,7 +127,7 @@ const logoScale = spring({
   config: { damping: 10, stiffness: 100 },
 });
 
-<div style={{ transform: `scale(${logoScale})` }}>🔐</div>
+<div style={{ transform: `scale(${logoScale})` }}>Logo</div>
 ```
 
 ### 淡入效果
@@ -203,38 +204,6 @@ src/
     └── colors.ts         # 颜色配置
 ```
 
-## 常见问题
-
-### Chrome 下载失败
-
-```bash
-npx remotion browser ensure
-```
-
-### 视频文件找不到
-
-确保文件在 `public/` 目录下，使用 `staticFile()` 引用
-
-### 渲染内存不足
-
-减少并发数：
-```bash
-npx remotion render ... --concurrency=4
-```
-
-### 字体不显示
-
-确保字体已加载：
-```tsx
-import "@fontsource/noto-sans-sc";
-```
-
-或使用 Google Fonts：
-```tsx
-import { loadFont } from "@remotion/google-fonts/NotoSansSC";
-loadFont();
-```
-
 ## 跳过录屏开头
 
 录屏可能包含页面加载等待时间，可以使用 `startFrom` 跳过：
@@ -280,6 +249,15 @@ rm out/final_raw.mp4
 - 片头/片尾背景音乐与配音音量差异
 - 确保视频在不同设备上播放音量一致
 
+## 常见问题
+
+| 问题 | 解决方案 |
+|------|----------|
+| Chrome 下载失败 | `npx remotion browser ensure` |
+| 视频文件找不到 | 确保文件在 `public/` 目录下，使用 `staticFile()` 引用 |
+| 渲染内存不足 | 减少并发数：`--concurrency=4` |
+| 字体不显示 | 使用 `@fontsource` 或 `@remotion/google-fonts` 加载字体 |
+
 ## 最终检查清单
 
 - [ ] 音频文件存在且路径正确
@@ -288,5 +266,5 @@ rm out/final_raw.mp4
 - [ ] 场景之间无缝隙
 - [ ] 字体正确加载
 - [ ] 渲染输出无错误
-- [ ] **配音无空白间隙**
-- [ ] **音量已标准化**
+- [ ] 配音无空白间隙
+- [ ] 音量已标准化
