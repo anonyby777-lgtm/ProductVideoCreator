@@ -1,10 +1,136 @@
 ---
 name: compositing
-description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果、时间线管理和故障处理。
-argument-hint: [项目路径]
+description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果、时间线管理、多尺寸模板和故障处理。
+argument-hint: [项目路径] [尺寸: 1080p/720p/vertical/square]
 ---
 
 # 视频合成技能
+
+## 多尺寸视频模板
+
+### 预设尺寸
+
+| 名称 | 分辨率 | 比例 | 适用平台 |
+|------|--------|------|----------|
+| 1080p (默认) | 1920×1080 | 16:9 | YouTube, 官网 |
+| 720p | 1280×720 | 16:9 | 快速预览, 低带宽 |
+| vertical | 1080×1920 | 9:16 | 抖音, 小红书, Reels |
+| square | 1080×1080 | 1:1 | Instagram, 微信 |
+| 4K | 3840×2160 | 16:9 | 高端展示 |
+
+### Remotion 多尺寸配置
+
+```tsx
+// videoPresets.ts
+export const VIDEO_PRESETS = {
+  "1080p": { width: 1920, height: 1080, name: "Full HD" },
+  "720p": { width: 1280, height: 720, name: "HD" },
+  "vertical": { width: 1080, height: 1920, name: "Vertical" },
+  "square": { width: 1080, height: 1080, name: "Square" },
+  "4k": { width: 3840, height: 2160, name: "4K" },
+} as const;
+
+export type VideoPreset = keyof typeof VIDEO_PRESETS;
+```
+
+### Root.tsx 多尺寸定义
+
+```tsx
+import { Composition } from "remotion";
+import { MainVideo } from "./MainVideo";
+import { VIDEO_PRESETS, VideoPreset } from "./videoPresets";
+
+const FPS = 30;
+const DURATION_SECONDS = 85;
+
+export const RemotionRoot: React.FC = () => {
+  return (
+    <>
+      {/* 为每个尺寸创建 Composition */}
+      {Object.entries(VIDEO_PRESETS).map(([key, preset]) => (
+        <Composition
+          key={key}
+          id={`Video-${key}`}
+          component={MainVideo}
+          durationInFrames={DURATION_SECONDS * FPS}
+          fps={FPS}
+          width={preset.width}
+          height={preset.height}
+          defaultProps={{ preset: key as VideoPreset }}
+        />
+      ))}
+    </>
+  );
+};
+```
+
+### 响应式组件适配
+
+```tsx
+// 根据视频尺寸调整布局
+const ResponsiveLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { width, height } = useVideoConfig();
+  const aspectRatio = width / height;
+
+  // 竖屏布局 (9:16)
+  if (aspectRatio < 1) {
+    return (
+      <AbsoluteFill style={{ flexDirection: "column", padding: "60px 40px" }}>
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // 方形布局 (1:1)
+  if (aspectRatio === 1) {
+    return (
+      <AbsoluteFill style={{ padding: "40px" }}>
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // 横屏布局 (16:9)
+  return (
+    <AbsoluteFill style={{ padding: "60px 120px" }}>
+      {children}
+    </AbsoluteFill>
+  );
+};
+```
+
+### 字体大小适配
+
+```tsx
+// 根据分辨率计算字体大小
+const getResponsiveFontSize = (baseSize: number): number => {
+  const { width, height } = useVideoConfig();
+  const scale = Math.min(width / 1920, height / 1080);
+  return Math.round(baseSize * scale);
+};
+
+// 使用示例
+const title = getResponsiveFontSize(72); // 1080p 下 72px
+```
+
+### 批量渲染脚本
+
+```bash
+#!/bin/bash
+# render_all_sizes.sh
+
+SIZES=("1080p" "720p" "vertical" "square")
+OUTPUT_DIR="out"
+
+for size in "${SIZES[@]}"; do
+  echo "渲染 $size..."
+  npx remotion render src/index.ts "Video-$size" "$OUTPUT_DIR/video_$size.mp4"
+done
+
+echo "所有尺寸渲染完成!"
+```
+
+---
 
 ## Remotion 基础
 

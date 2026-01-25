@@ -8,7 +8,10 @@
 
 - **多种视频类型** - 录屏演示型、图文展示型、混合型
 - **分镜先行** - 制作前必须获得用户确认
-- **声音选择** - 5 种中文配音声音，适配不同内容风格
+- **多语言配音** - 中文（5种声音）+ 英文（6种声音），自动语速计算
+- **背景音乐** - 免版权 BGM，场景感知动态音量，淡入淡出效果
+- **自动字幕** - 解析配音文案，生成同步字幕
+- **多尺寸模板** - 1080p、720p、竖屏 (9:16)、方形 (1:1)
 - **配音验证** - 自动检测时长超出、片段重叠、空白间隙
 - **高级动画** - 弹性物理动画、发光效果、粒子系统
 - **专业合成** - 基于 Remotion 的视频渲染
@@ -19,7 +22,7 @@
 |------|------|------|
 | 视频合成 | Remotion | React-based 视频渲染框架 |
 | 浏览器录屏 | Playwright | 自动化浏览器操作和录制 |
-| 语音合成 | edge-tts | 免费中文配音（5种声音） |
+| 语音合成 | edge-tts | 多语言配音（11种声音） |
 | 音视频处理 | FFmpeg | 音频合并、时间定位、音量标准化 |
 | 字体渲染 | @remotion/google-fonts | 统一中文字体显示 |
 
@@ -32,14 +35,16 @@ ProductVideoCreator/
 │       ├── product-video/      # 主技能入口
 │       ├── storyboard/         # 分镜脚本技能
 │       ├── recording/          # 录屏技能
-│       ├── voiceover/          # 配音生成 + 验证
-│       ├── compositing/        # 视频合成 + 动画
+│       ├── voiceover/          # 多语言配音生成
+│       ├── bgm/                # 背景音乐
+│       ├── subtitles/          # 自动字幕生成
+│       ├── compositing/        # 视频合成 + 多尺寸
 │       └── asset-collection/   # 素材收集
 ├── templates/                  # 可复用模板
 └── nvidia-video/               # 示例：NVIDIA 公司历程视频
-    ├── src/                    # V1 & V2 视频组件
+    ├── src/                    # V1、V2、V3 视频组件
     ├── public/images/          # 收集的素材
-    └── COMPARISON_REPORT.md    # V1 vs V2 对比分析
+    └── V3_COMPARISON_REPORT.md # V1 vs V2 vs V3 对比分析
 ```
 
 ## 可用技能
@@ -49,8 +54,10 @@ ProductVideoCreator/
 | product-video | `/product-video` | 主入口 - 支持 demo/slideshow/mixed 类型 |
 | storyboard | `/storyboard` | 分镜脚本和配音文案设计 |
 | recording | `/recording` | 浏览器自动化录屏 |
-| voiceover | `/voiceover` | 配音生成与自动验证 |
-| compositing | `/compositing` | 视频合成与高级动画 |
+| voiceover | `/voiceover` | 多语言配音 (中/英) + 自动验证 |
+| bgm | `/bgm` | 背景音乐 + 场景感知音量控制 |
+| subtitles | `/subtitles` | 自动字幕生成 |
+| compositing | `/compositing` | 视频合成 + 多尺寸模板 |
 | asset-collection | `/asset-collection` | 从免版权网站收集素材 |
 
 ## 视频类型
@@ -63,6 +70,8 @@ ProductVideoCreator/
 
 ## 声音选择
 
+### 中文声音 (zh-CN)
+
 | 声音 ID | 性别 | 风格 | 适用场景 |
 |---------|------|------|----------|
 | XiaoxiaoNeural | 女 | 温暖亲切 | 产品介绍、教程 |
@@ -70,6 +79,26 @@ ProductVideoCreator/
 | **YunjianNeural** | 男 | 激情活力 | 科技发布、激励视频 |
 | XiaoyiNeural | 女 | 年轻活泼 | 创意内容、轻松主题 |
 | YunyangNeural | 男 | 新闻播报 | 资讯类、严肃主题 |
+
+### 英文声音 (en-US)
+
+| 声音 ID | 性别 | 风格 | 适用场景 |
+|---------|------|------|----------|
+| GuyNeural | 男 | 专业稳重 | 企业宣传、产品介绍 |
+| JennyNeural | 女 | 温暖友好 | 教程、客户服务 |
+| **JasonNeural** | 男 | 激情活力 | 科技发布、激励视频 |
+| AriaNeural | 女 | 清晰专业 | 新闻、正式场合 |
+| DavisNeural | 男 | 年轻活力 | 科技内容、创意视频 |
+| SaraNeural | 女 | 年轻活泼 | 社交媒体、轻松主题 |
+
+## 视频尺寸模板
+
+| 尺寸 | 分辨率 | 比例 | 适用平台 |
+|------|--------|------|----------|
+| 1080p | 1920×1080 | 16:9 | YouTube, 官网 |
+| 720p | 1280×720 | 16:9 | 快速预览, 低带宽 |
+| vertical | 1080×1920 | 9:16 | 抖音, 小红书, Reels |
+| square | 1080×1080 | 1:1 | Instagram, 微信 |
 
 ## 配音验证机制
 
@@ -100,9 +129,10 @@ ProductVideoCreator/
 
 - **V1 版本**: 基础实现（评分: 6.6/10）
 - **V2 版本**: 优化版 - YunjianNeural 声音、粒子效果、发光动画（评分: 8.6/10）
-- **提升 30%** - 通过技能优化实现
+- **V3 版本**: 完整版 - 字幕、BGM、增强动画（评分: 9.1/10）
+- **提升 38%** (V1→V3) - 通过技能优化实现
 
-详见 `nvidia-video/COMPARISON_REPORT.md` 对比分析报告。
+详见 `nvidia-video/V3_COMPARISON_REPORT.md` 对比分析报告。
 
 ## 安装使用
 

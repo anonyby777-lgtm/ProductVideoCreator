@@ -1,7 +1,7 @@
 ---
 name: voiceover
-description: 使用 edge-tts 生成中文配音。当需要为视频生成语音旁白、基于时间线同步配音时使用。支持语速调整、多种声音选择和配音验证。
-argument-hint: [配音文案或时间线文件]
+description: 使用 edge-tts 生成多语言配音（中文/英文）。当需要为视频生成语音旁白、基于时间线同步配音时使用。支持语速调整、多种声音选择和配音验证。
+argument-hint: [配音文案或时间线文件] [语言: zh/en]
 ---
 
 # 配音生成技能
@@ -10,14 +10,14 @@ argument-hint: [配音文案或时间线文件]
 
 | 方案 | 优点 | 缺点 |
 |------|------|------|
-| edge-tts | 免费、音质好、支持中文 | 需要网络 |
+| edge-tts | 免费、音质好、多语言支持 | 需要网络 |
 | Azure TTS | 更多声音选择、更稳定 | 需要付费 |
 
 **推荐**: edge-tts
 
 ## 声音选择
 
-### 中文声音列表
+### 中文声音列表 (zh-CN)
 
 | 声音 ID | 性别 | 风格 | 适用场景 |
 |---------|------|------|----------|
@@ -27,7 +27,20 @@ argument-hint: [配音文案或时间线文件]
 | zh-CN-XiaoyiNeural | 女 | 年轻活泼 | 创意内容、轻松主题 |
 | zh-CN-YunyangNeural | 男 | 新闻播报 | 资讯类、严肃主题 |
 
+### 英文声音列表 (en-US)
+
+| 声音 ID | 性别 | 风格 | 适用场景 |
+|---------|------|------|----------|
+| en-US-GuyNeural | 男 | 专业稳重 | 企业宣传、产品介绍 |
+| en-US-JennyNeural | 女 | 温暖友好 | 教程、客户服务 |
+| en-US-AriaNeural | 女 | 清晰专业 | 新闻、正式场合 |
+| en-US-DavisNeural | 男 | 年轻活力 | 科技内容、创意视频 |
+| en-US-JasonNeural | 男 | 激情活力 | 发布会、激励视频 |
+| en-US-SaraNeural | 女 | 年轻活泼 | 社交媒体、轻松主题 |
+
 ### 声音选择建议
+
+**中文视频:**
 
 | 视频类型 | 推荐声音 |
 |----------|----------|
@@ -36,6 +49,16 @@ argument-hint: [配音文案或时间线文件]
 | 科技历程 | **YunjianNeural (男)** - 有激情感 |
 | 教程类 | XiaoxiaoNeural (女) |
 | 发布会风格 | YunjianNeural (男) |
+
+**英文视频:**
+
+| 视频类型 | 推荐声音 |
+|----------|----------|
+| 产品演示 | GuyNeural (男) 或 JennyNeural (女) |
+| 公司介绍 | GuyNeural (男) 或 AriaNeural (女) |
+| 科技历程 | **JasonNeural (男)** - 有激情感 |
+| 教程类 | JennyNeural (女) |
+| 发布会风格 | JasonNeural (男) 或 DavisNeural (男) |
 
 ## 时间线计算
 
@@ -161,21 +184,24 @@ def print_validation_report(segments, total_duration):
     return passed
 ```
 
-## 完整配音脚本模板 (V2)
+## 完整配音脚本模板 (V2 - 多语言版)
 
 ```python
 #!/usr/bin/env python3
 """
-配音生成脚本 V2 - 包含验证机制
+配音生成脚本 V2 - 包含验证机制 + 多语言支持
 """
 
 import asyncio
 import subprocess
 from pathlib import Path
 import json
+import re
 
 # ========== 配置 ==========
+LANGUAGE = "zh"  # "zh" 或 "en"
 VOICE = "zh-CN-YunjianNeural"  # 科技感男声
+# 英文示例: VOICE = "en-US-JasonNeural"
 OUTPUT_DIR = Path("public/audio")
 TOTAL_DURATION = 85  # 视频总时长
 
@@ -214,21 +240,35 @@ def validate_voiceover(segments, total_duration):
 
     return len([i for i in issues if i.startswith("❌")]) == 0, issues
 
+# ========== 多语言支持函数 ==========
+def calculate_natural_duration(text, language):
+    """计算文本自然朗读时长"""
+    if language == "zh":
+        # 中文: 约 4 字/秒
+        char_count = len(re.sub(r'[^\u4e00-\u9fff]', '', text))
+        return char_count / 4.0
+    else:
+        # 英文: 约 150 词/分钟 = 2.5 词/秒
+        word_count = len(text.split())
+        return word_count / 2.5
+
 # ========== 生成函数 ==========
 async def generate_segment(index, start, end, text):
-    """生成单个配音片段"""
+    """生成单个配音片段（支持多语言）"""
     import edge_tts
 
     output_file = OUTPUT_DIR / f"vo_{index:02d}.mp3"
     duration_target = end - start
 
-    # 计算语速
-    char_count = len(text.replace(" ", "").replace("，", "").replace("。", ""))
-    natural_duration = char_count / 4.0
+    # 计算语速（多语言支持）
+    natural_duration = calculate_natural_duration(text, LANGUAGE)
 
     if natural_duration > duration_target:
         rate_adjust = min(35, int((natural_duration / duration_target - 1) * 100))
         rate = f"+{rate_adjust}%"
+    elif natural_duration < duration_target * 0.7:
+        rate_adjust = min(15, int((1 - natural_duration / duration_target) * 50))
+        rate = f"-{rate_adjust}%"
     else:
         rate = "+0%"
 
@@ -246,6 +286,7 @@ async def generate_segment(index, start, end, text):
         "actual_duration": actual_duration,
         "text": text[:20] + "...",
         "rate": rate,
+        "language": LANGUAGE,
     }
 
 def merge_audio(segments):
@@ -329,19 +370,41 @@ if __name__ == "__main__":
 
 ## 语速控制
 
-### 语速计算
+### 多语言语速计算
 
 ```python
-# 中文语速约 4 字/秒
-char_count = len(text)  # 不含标点
-natural_duration = char_count / 4.0
+def calculate_natural_duration(text, language="zh"):
+    """计算文本自然朗读时长"""
+    import re
 
-# 需要的语速调整
-if natural_duration > target_duration:
-    rate = f"+{adjustment}%"  # 最多 +35%
-elif natural_duration < target_duration * 0.7:
-    rate = f"-{adjustment}%"  # 最多 -15%
+    if language == "zh":
+        # 中文: 约 4 字/秒
+        char_count = len(re.sub(r'[^\u4e00-\u9fff]', '', text))
+        return char_count / 4.0
+    else:
+        # 英文: 约 150 词/分钟 = 2.5 词/秒
+        word_count = len(text.split())
+        return word_count / 2.5
+
+def calculate_rate(text, target_duration, language="zh"):
+    """计算语速调整"""
+    natural_duration = calculate_natural_duration(text, language)
+
+    if natural_duration > target_duration:
+        adjustment = min(35, int((natural_duration / target_duration - 1) * 100))
+        return f"+{adjustment}%"
+    elif natural_duration < target_duration * 0.7:
+        adjustment = min(15, int((1 - natural_duration / target_duration) * 50))
+        return f"-{adjustment}%"
+    return "+0%"
 ```
+
+### 语速参考
+
+| 语言 | 自然语速 | 最快可调 | 最慢可调 |
+|------|----------|----------|----------|
+| 中文 | 4 字/秒 | +35% (5.4字/秒) | -15% (3.4字/秒) |
+| 英文 | 150 词/分 | +35% (200词/分) | -15% (130词/分) |
 
 ### 建议
 
