@@ -41,6 +41,17 @@ ProductVideoCreator/
 │       ├── compositing/        # 视频合成 + 多尺寸
 │       └── asset-collection/   # 素材收集
 ├── templates/                  # 可复用模板
+│   ├── config/                 # 配置模板
+│   │   ├── scenes.ts           # 场景时间配置
+│   │   ├── theme.ts            # 品牌颜色和样式
+│   │   ├── types.ts            # TypeScript 类型定义
+│   │   └── videoPresets.ts     # 多尺寸预设 (720p-4K)
+│   └── components/             # 组件模板
+│       ├── SubtitleDisplay.tsx # 字幕组件 (淡入淡出)
+│       ├── AnimatedText.tsx    # 动画文字 (淡入/大字/打字机)
+│       ├── BackgroundEffects.tsx # 背景效果 (粒子/代码雨)
+│       ├── BrandElements.tsx   # 品牌元素 (Logo/数据卡)
+│       └── useResponsive.ts    # 响应式布局 Hook
 └── nvidia-video/               # 示例：NVIDIA 公司历程视频
     ├── src/                    # V1、V2、V3 视频组件
     ├── public/images/          # 收集的素材
@@ -95,6 +106,7 @@ ProductVideoCreator/
 
 | 尺寸 | 分辨率 | 比例 | 适用平台 |
 |------|--------|------|----------|
+| 4k | 3840×2160 | 16:9 | 高端展示, 4K 显示器 |
 | 1080p | 1920×1080 | 16:9 | YouTube, 官网 |
 | 720p | 1280×720 | 16:9 | 快速预览, 低带宽 |
 | vertical | 1080×1920 | 9:16 | 抖音, 小红书, Reels |
@@ -129,8 +141,9 @@ ProductVideoCreator/
 
 - **V1 版本**: 基础实现（评分: 6.6/10）
 - **V2 版本**: 优化版 - YunjianNeural 声音、粒子效果、发光动画（评分: 8.6/10）
-- **V3 版本**: 完整版 - 字幕、BGM、增强动画（评分: 9.1/10）
-- **提升 38%** (V1→V3) - 通过技能优化实现
+- **V3 版本**: 完整版 - 字幕、BGM、场景感知音量、多尺寸模板（评分: 9.4/10）
+- **提升 42%** (V1→V3) - 通过技能优化实现
+- **多尺寸支持**: 已验证 720p、1080p、竖屏、方形、4K 均可正常输出
 
 详见 `nvidia-video/V3_COMPARISON_REPORT.md` 对比分析报告。
 

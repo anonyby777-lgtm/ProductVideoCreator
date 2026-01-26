@@ -6,6 +6,57 @@ argument-hint: [配音元数据文件路径]
 
 # 字幕自动生成技能
 
+## 快速开始：使用模板
+
+项目提供了可复用的字幕组件模板：
+
+```tsx
+// 从模板导入
+import { SubtitleDisplay, createSubtitlesFromMetadata } from "./components/SubtitleDisplay";
+import type { Subtitle } from "./config/types";
+```
+
+模板位置：`templates/components/SubtitleDisplay.tsx`
+
+---
+
+## 重要：字幕时间同步
+
+**字幕时间必须基于 voiceover_metadata.json 的 `actual_duration`（实际时长），而非 `target_duration`（目标时长）。**
+
+```tsx
+// ✅ 正确：使用 actual_duration 计算 end 时间
+const SUBTITLES: Subtitle[] = [
+  {
+    start: segment.start_time,
+    end: segment.start_time + segment.actual_duration,  // 使用实际时长
+    text: segment.text
+  },
+];
+
+// ❌ 错误：使用 target_duration（可能导致字幕与音频不同步）
+const SUBTITLES: Subtitle[] = [
+  {
+    start: segment.start_time,
+    end: segment.start_time + segment.target_duration,  // 不要这样做
+    text: segment.text
+  },
+];
+```
+
+### 验证字幕时间
+
+```tsx
+import { validateSubtitleTiming } from "./components/SubtitleDisplay";
+
+const { valid, warnings } = validateSubtitleTiming(SUBTITLES, VIDEO_DURATION);
+if (!valid) {
+  console.warn("字幕时间警告:", warnings);
+}
+```
+
+---
+
 ## 工作流程
 
 ```

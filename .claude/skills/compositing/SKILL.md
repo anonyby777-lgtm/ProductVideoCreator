@@ -1,10 +1,50 @@
 ---
 name: compositing
 description: 使用 Remotion 合成最终视频。当需要将片头、录屏、配音、片尾组合成完整视频时使用。包含动画效果、时间线管理、多尺寸模板和故障处理。
-argument-hint: [项目路径] [尺寸: 1080p/720p/vertical/square]
+argument-hint: [项目路径] [尺寸: 1080p/720p/vertical/square/4k]
 ---
 
 # 视频合成技能
+
+## 快速开始：使用模板
+
+项目提供了可复用的配置和组件模板，位于 `templates/` 目录：
+
+```bash
+templates/
+├── config/                # 配置模板
+│   ├── scenes.ts          # 场景时间配置
+│   ├── theme.ts           # 主题颜色配置
+│   ├── types.ts           # TypeScript 类型定义
+│   ├── videoPresets.ts    # 多尺寸视频预设
+│   └── index.ts           # 统一导出
+└── components/            # 组件模板
+    ├── SubtitleDisplay.tsx    # 字幕组件
+    ├── AnimatedText.tsx       # 动画文字组件
+    ├── BackgroundEffects.tsx  # 背景效果组件
+    ├── BrandElements.tsx      # 品牌元素组件
+    ├── useResponsive.ts       # 响应式 Hook
+    └── index.ts               # 统一导出
+```
+
+### 使用方法
+
+1. 复制模板到项目目录：
+```bash
+cp -r templates/config src/config
+cp -r templates/components src/components
+```
+
+2. 根据项目需要修改配置（颜色、场景时间等）
+
+3. 在组件中导入使用：
+```tsx
+import { SCENES, FPS, VIDEO_DURATION } from "./config";
+import { THEME, getGlowStyle } from "./config";
+import { SubtitleDisplay, FadeInText, ParticleField } from "./components";
+```
+
+---
 
 ## 多尺寸视频模板
 
@@ -426,6 +466,83 @@ const DataCard: React.FC<{
   );
 };
 ```
+
+---
+
+## 重要最佳实践
+
+### 1. 防止随机字符闪烁 (重要!)
+
+当使用随机生成的字符（如代码雨效果）时，**必须使用 useMemo + seeded random** 来防止每帧重新生成导致的闪烁。
+
+**错误示例 (会闪烁):**
+```tsx
+// ❌ 错误：每帧都会重新生成随机字符
+const CodeRain: React.FC = () => {
+  const chars = Array.from({ length: 25 }, () =>
+    String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96))
+  ).join("");
+  return <div>{chars}</div>;
+};
+```
+
+**正确示例:**
+```tsx
+// ✅ 正确：使用 useMemo + seeded random
+const CodeRain: React.FC = () => {
+  const codeLines = useMemo(() => {
+    // Seeded random 确保相同种子产生相同结果
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed * 9999) * 10000;
+      return x - Math.floor(x);
+    };
+
+    return Array.from({ length: 25 }, (_, i) => ({
+      chars: Array.from({ length: 25 }, (_, j) =>
+        String.fromCharCode(0x30A0 + Math.floor(seededRandom(i * 100 + j) * 96))
+      ).join(""),
+    }));
+  }, []); // 空依赖数组 = 只计算一次
+
+  return (
+    <>
+      {codeLines.map((line, i) => (
+        <div key={i}>{line.chars}</div>
+      ))}
+    </>
+  );
+};
+```
+
+### 2. 使用共享配置
+
+将 FPS、场景时间、主题颜色等配置集中管理，避免重复定义和不一致：
+
+```tsx
+// ✅ 正确：从共享配置导入
+import { SCENES, FPS, VIDEO_DURATION } from "./config/scenes";
+import { THEME } from "./config/theme";
+
+// ❌ 错误：在组件中重复定义
+const FPS = 30;  // 避免这样做
+const NVIDIA_GREEN = "#76B900";  // 应该用 THEME.primary
+```
+
+### 3. 场景时间验证
+
+使用 `validateScenes()` 函数检查场景配置：
+
+```tsx
+import { validateScenes, SCENES } from "./config/scenes";
+
+// 在开发时验证
+const { valid, errors } = validateScenes();
+if (!valid) {
+  console.error("场景配置错误:", errors);
+}
+```
+
+---
 
 ## 图文视频组件模板
 

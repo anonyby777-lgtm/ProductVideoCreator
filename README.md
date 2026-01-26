@@ -41,6 +41,17 @@ ProductVideoCreator/
 │       ├── compositing/        # Video composition + multi-size
 │       └── asset-collection/   # Image/logo collection
 ├── templates/                  # Reusable templates
+│   ├── config/                 # Configuration templates
+│   │   ├── scenes.ts           # Scene timing config
+│   │   ├── theme.ts            # Brand colors & styles
+│   │   ├── types.ts            # TypeScript definitions
+│   │   └── videoPresets.ts     # Multi-size presets (720p-4K)
+│   └── components/             # Component templates
+│       ├── SubtitleDisplay.tsx # Subtitle with fade animations
+│       ├── AnimatedText.tsx    # FadeIn, BigText, Typewriter
+│       ├── BackgroundEffects.tsx # Particles, CodeRain, Neural
+│       ├── BrandElements.tsx   # Logo, DataCard, Slogan
+│       └── useResponsive.ts    # Responsive layout hook
 └── nvidia-video/               # Demo: NVIDIA history video
     ├── src/                    # V1, V2, V3 video components
     ├── public/images/          # Collected assets
@@ -95,6 +106,7 @@ ProductVideoCreator/
 
 | Size | Resolution | Ratio | Platform |
 |------|------------|-------|----------|
+| 4k | 3840×2160 | 16:9 | High-end displays, 4K monitors |
 | 1080p | 1920×1080 | 16:9 | YouTube, Website |
 | 720p | 1280×720 | 16:9 | Preview, Low bandwidth |
 | vertical | 1080×1920 | 9:16 | TikTok, Reels, Shorts |
@@ -115,8 +127,9 @@ The `nvidia-video/` directory contains a complete NVIDIA company history video d
 
 - **V1**: Basic implementation (score: 6.6/10)
 - **V2**: Optimized with YunjianNeural voice, particles, glow effects (score: 8.6/10)
-- **V3**: Full-featured with subtitles, BGM, enhanced animations (score: 9.1/10)
-- **38% improvement** (V1→V3) through skills optimization
+- **V3**: Full-featured with subtitles, BGM, scene-aware volume, multi-size templates (score: 9.4/10)
+- **42% improvement** (V1→V3) through skills optimization
+- **Multi-size support**: Verified working with 720p, 1080p, vertical, square, and 4K outputs
 
 See `nvidia-video/V3_COMPARISON_REPORT.md` for detailed analysis.
 

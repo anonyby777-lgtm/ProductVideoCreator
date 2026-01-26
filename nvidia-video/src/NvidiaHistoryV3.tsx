@@ -15,9 +15,23 @@ import { loadFont } from "@remotion/google-fonts/NotoSansSC";
 import { SCENES, FPS } from "./config/scenes";
 import { THEME } from "./config/theme";
 import type { Subtitle } from "./config/types";
+import { getResponsiveFontSize, getLayoutConfig } from "./config/videoPresets";
 
 // 字体加载
 const { fontFamily } = loadFont();
+
+// ========== 响应式工具 Hook ==========
+const useResponsive = () => {
+  const { width, height } = useVideoConfig();
+  const layout = getLayoutConfig(width, height);
+  const aspectRatio = width / height;
+  const isVertical = aspectRatio < 1;
+  const isSquare = Math.abs(aspectRatio - 1) < 0.01;
+
+  const scale = (baseSize: number) => getResponsiveFontSize(baseSize, width, height);
+
+  return { width, height, layout, aspectRatio, isVertical, isSquare, scale };
+};
 
 // ========== 字幕数据 (基于 voiceover_metadata.json 实际时长) ==========
 const SUBTITLES: Subtitle[] = [
