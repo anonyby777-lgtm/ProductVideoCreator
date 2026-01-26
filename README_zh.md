@@ -134,6 +134,26 @@ ProductVideoCreator/
 
 详见 `nvidia-video/V3_COMPARISON_REPORT.md` 对比分析报告。
 
+## 系统要求
+
+| 依赖 | 版本 | 说明 |
+|------|------|------|
+| Node.js | >= 18.0.0 | Remotion 运行环境 |
+| Python | >= 3.8 | edge-tts 运行环境 |
+| FFmpeg | >= 4.0 | 音频处理 |
+| Git | >= 2.0 | 版本控制 |
+
+**操作系统**: macOS 或 Linux（Windows 需要 WSL）
+
+### 环境检查
+
+```bash
+# 验证所有依赖
+node --version    # 应 >= 18.0.0
+python3 --version # 应 >= 3.8
+ffmpeg -version   # 应 >= 4.0
+```
+
 ## 安装使用
 
 ### 1. 将技能添加到你的项目
@@ -208,6 +228,55 @@ npx playwright install chromium
 │  阶段五: 验收交付                                     │
 └─────────────────────────────────────────────────────┘
 ```
+
+## 常见问题
+
+### 视频渲染成功但没有声音
+
+```bash
+# 检查 FFmpeg 安装
+ffmpeg -version
+
+# 验证音频文件存在
+ls -la nvidia-video/public/audio/
+```
+
+### 中文字符显示不正确
+
+```bash
+# 安装字体包
+npm install @remotion/google-fonts
+
+# 在组件中验证字体加载
+import { loadFont } from "@remotion/google-fonts/NotoSansSC";
+const { fontFamily } = loadFont();
+```
+
+### Remotion 浏览器下载超时
+
+```bash
+# 使用缓存的浏览器
+npx remotion render src/index.ts MyVideo out/video.mp4 \
+  --browser-executable="$HOME/.cache/remotion/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+```
+
+### edge-tts 配音生成失败
+
+```bash
+# 重新安装 edge-tts
+pip install --upgrade edge-tts
+
+# 测试配音生成
+edge-tts --text "你好" --voice zh-CN-YunjianNeural --write-media test.mp3
+```
+
+### 配音验证错误
+
+| 错误 | 解决方案 |
+|------|----------|
+| 时长超出目标 | 缩短文案或增加场景时长 |
+| 片段重叠 | 调整分镜中的开始/结束时间 |
+| 间隙过大 (>3秒) | 添加过渡文案或调整时间 |
 
 ## 许可证
 

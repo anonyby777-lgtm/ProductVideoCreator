@@ -1,0 +1,8 @@
+# Python dependencies for ProductVideoCreator
+# Install with: pip install -r requirements.txt
+
+# Text-to-Speech
+edge-tts>=7.2.7
+
+# Optional: Audio processing (usually available via system)
+# pydub>=0.25.1

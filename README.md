@@ -120,6 +120,26 @@ The `nvidia-video/` directory contains a complete NVIDIA company history video d
 
 See `nvidia-video/V3_COMPARISON_REPORT.md` for detailed analysis.
 
+## Prerequisites
+
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Node.js | >= 18.0.0 | Required for Remotion |
+| Python | >= 3.8 | Required for edge-tts |
+| FFmpeg | >= 4.0 | Required for audio processing |
+| Git | >= 2.0 | Required for version control |
+
+**Operating System**: macOS or Linux (Windows with WSL)
+
+### Quick Check
+
+```bash
+# Verify all dependencies
+node --version    # Should be >= 18.0.0
+python3 --version # Should be >= 3.8
+ffmpeg -version   # Should be >= 4.0
+```
+
 ## Installation
 
 ### 1. Clone this repository
@@ -194,6 +214,55 @@ Once the skills are in your project's `.claude/skills/` directory, Claude Code w
 │ Phase 5: Review & Delivery                          │
 └─────────────────────────────────────────────────────┘
 ```
+
+## Troubleshooting
+
+### Video renders but has no audio
+
+```bash
+# Check FFmpeg installation
+ffmpeg -version
+
+# Verify audio files exist
+ls -la nvidia-video/public/audio/
+```
+
+### Chinese characters don't display correctly
+
+```bash
+# Install font package
+npm install @remotion/google-fonts
+
+# Verify font loading in your component
+import { loadFont } from "@remotion/google-fonts/NotoSansSC";
+const { fontFamily } = loadFont();
+```
+
+### Remotion browser download timeout
+
+```bash
+# Use cached browser if available
+npx remotion render src/index.ts MyVideo out/video.mp4 \
+  --browser-executable="$HOME/.cache/remotion/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+```
+
+### edge-tts voice generation fails
+
+```bash
+# Reinstall edge-tts
+pip install --upgrade edge-tts
+
+# Test voice generation
+edge-tts --text "Hello" --voice en-US-GuyNeural --write-media test.mp3
+```
+
+### Voiceover validation errors
+
+| Error | Solution |
+|-------|----------|
+| Duration exceeds target | Shorten script or increase scene duration |
+| Segments overlap | Adjust start/end times in storyboard |
+| Gap too large (>3s) | Add transition text or adjust timing |
 
 ## License
 

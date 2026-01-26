@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   AbsoluteFill,
   Audio,
@@ -12,23 +12,14 @@ import {
   Easing,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/NotoSansSC";
+import { SCENES, FPS } from "./config/scenes";
+import { THEME } from "./config/theme";
+import type { Subtitle } from "./config/types";
 
 const { fontFamily } = loadFont();
 
-const FPS = 30;
-
-// ========== 场景时间配置 ==========
-const SCENES = {
-  opening: { start: 0, duration: 8 },
-  founding: { start: 8, duration: 14 },
-  gpu: { start: 22, duration: 16 },
-  cuda: { start: 38, duration: 14 },
-  ai: { start: 52, duration: 20 },
-  closing: { start: 72, duration: 13 },
-};
-
 // ========== 字幕数据 ==========
-const SUBTITLES = [
+const SUBTITLES: Subtitle[] = [
   { start: 0.5, end: 7.5, text: "1993年，黄仁勋在加州创立NVIDIA，开启了一段改变世界的旅程" },
   { start: 8.5, end: 21.5, text: "三位工程师从餐厅起步，用4万美元启动资金，立志重新定义计算机图形" },
   { start: 22.5, end: 37.5, text: "1999年，GeForce 256横空出世，GPU概念首次被提出，视觉计算进入新纪元" },
@@ -36,16 +27,6 @@ const SUBTITLES = [
   { start: 52.5, end: 71.5, text: "AI时代来临，NVIDIA成为全球首家万亿市值芯片公司，掌握全球80%AI算力" },
   { start: 72.5, end: 84.5, text: "用芯片重新定义未来，NVIDIA的传奇仍在继续" },
 ];
-
-// ========== 主题颜色 ==========
-const THEME = {
-  primary: "#76B900",
-  secondary: "#00A8E8",
-  background: "#0a0a0a",
-  text: "#ffffff",
-  muted: "#888888",
-  gradient: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%)",
-};
 
 // ========== 字幕组件 ==========
 const SubtitleDisplay: React.FC = () => {
@@ -526,15 +507,25 @@ const GPUScene: React.FC = () => {
 const CUDAScene: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // Enhanced code rain effect
-  const codeLines = Array.from({ length: 25 }, (_, i) => ({
-    x: (i * 80) % 1920,
-    speed: 1.5 + (i % 4) * 0.5,
-    opacity: 0.08 + (i % 6) * 0.04,
-    chars: Array.from({ length: 25 }, () =>
-      String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96))
-    ).join(""),
-  }));
+  // Enhanced code rain effect - useMemo to prevent character flickering
+  const codeLines = useMemo(() => {
+    // Use seeded random for consistent results
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed * 9999) * 10000;
+      return x - Math.floor(x);
+    };
+
+    return Array.from({ length: 25 }, (_, i) => ({
+      x: (i * 80) % 1920,
+      speed: 1.5 + (i % 4) * 0.5,
+      opacity: 0.08 + (i % 6) * 0.04,
+      chars: Array.from({ length: 25 }, (_, j) => {
+        // Use Katakana range (0x30A0-0x30FF) with seeded random
+        const charCode = 0x30A0 + Math.floor(seededRandom(i * 100 + j) * 96);
+        return String.fromCharCode(charCode);
+      }).join(""),
+    }));
+  }, []);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0d1117" }}>

@@ -1,11 +1,21 @@
 {
   "name": "nvidia-history-video",
-  "version": "1.0.0",
-  "description": "NVIDIA 公司历程介绍短片",
+  "version": "1.1.0",
+  "description": "NVIDIA 公司历程介绍短片 - ProductVideoCreator 示例项目",
+  "author": "ProductVideoCreator",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MatrixReligio/ProductVideoCreator.git"
+  },
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts NvidiaHistory out/nvidia_history.mp4",
-    "render:gif": "remotion render src/index.ts NvidiaHistory out/nvidia_history.gif --image-format=png"
+    "render:v2": "remotion render src/index.ts NvidiaHistoryV2 out/nvidia_history_v2.mp4",
+    "render:v3": "remotion render src/index.ts NvidiaHistoryV3 out/nvidia_history_v3.mp4",
+    "render:gif": "remotion render src/index.ts NvidiaHistory out/nvidia_history.gif --image-format=png",
+    "clean": "rm -rf out/*.mp4 out/*.gif",
+    "upgrade": "remotion upgrade"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
