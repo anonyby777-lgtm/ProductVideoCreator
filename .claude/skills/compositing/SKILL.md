@@ -542,6 +542,91 @@ if (!valid) {
 }
 ```
 
+### 4. 神经网络粒子效果
+
+用于 AI/科技主题视频的动态粒子可视化：
+
+```tsx
+import React, { useMemo } from "react";
+import { useCurrentFrame } from "remotion";
+
+interface NeuralNetworkProps {
+  nodeCount?: number;
+  color?: string;
+  centerX?: number;
+  centerY?: number;
+  spreadX?: number;
+  spreadY?: number;
+}
+
+/**
+ * 神经网络可视化效果
+ *
+ * 效果：飘动的发光节点，模拟神经网络的活跃状态
+ * 适用场景：AI 主题、数据可视化、科技感背景
+ */
+export const NeuralNetwork: React.FC<NeuralNetworkProps> = ({
+  nodeCount = 40,
+  color = "#76B900",
+  centerX = 960,
+  centerY = 480,
+  spreadX = 350,
+  spreadY = 180,
+}) => {
+  const frame = useCurrentFrame();
+
+  // 使用 useMemo 缓存节点属性，防止闪烁
+  const nodes = useMemo(() => {
+    return Array.from({ length: nodeCount }, (_, i) => ({
+      size: 4 + (i % 6),
+      opacity: 0.25 + ((i % 8) * 0.06),
+      offsetMultiplierX: i * 0.4,
+      offsetMultiplierY: i * 0.3,
+      speedX: 0.015,
+      speedY: 0.012,
+    }));
+  }, [nodeCount]);
+
+  return (
+    <>
+      {nodes.map((node, i) => {
+        const x = Math.sin(frame * node.speedX + node.offsetMultiplierX) * spreadX + centerX;
+        const y = Math.cos(frame * node.speedY + node.offsetMultiplierY) * spreadY + centerY;
+
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: x,
+              top: y,
+              width: node.size,
+              height: node.size,
+              borderRadius: "50%",
+              backgroundColor: color,
+              opacity: node.opacity,
+              boxShadow: `0 0 ${node.size * 4}px ${color}`,
+            }}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+// 使用示例
+<NeuralNetwork
+  nodeCount={50}
+  color="#76B900"
+  centerX={960}
+  centerY={540}
+  spreadX={400}
+  spreadY={200}
+/>
+```
+
+模板位置：`templates/components/BackgroundEffects.tsx`
+
 ---
 
 ## 图文视频组件模板

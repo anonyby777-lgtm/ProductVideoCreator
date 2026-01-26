@@ -237,6 +237,154 @@ ffmpeg -i voiceover.mp3 -i bgm.mp3 \
 3. **场景边界淡入淡出**：循环接缝处使用交叉淡化
 4. **动态音量**：片头片尾可略高，配音密集段落降低
 
+---
+
+## Remotion 动态音量控制 (推荐)
+
+除了使用 FFmpeg 预处理，还可以在 Remotion 中直接实现动态音量控制。这种方式更灵活，便于调试。
+
+### 基础用法：场景感知音量
+
+```tsx
+import { Audio, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { SCENES } from "./config/scenes";
+
+// 场景音量配置
+const SCENE_VOLUMES = {
+  opening: 0.15,   // 片头无配音，音量较高
+  scene1: 0.05,    // 有配音场景
+  scene2: 0.05,
+  scene3: 0.05,
+  scene4: 0.05,
+  closing: 0.12,   // 片尾配音较少
+};
+
+// 动态音量函数
+const getDynamicVolume = (frame: number, fps: number): number => {
+  const currentTime = frame / fps;
+
+  // 遍历场景找到当前所在场景
+  for (const [sceneName, scene] of Object.entries(SCENES)) {
+    const sceneEnd = scene.start + scene.duration;
+    if (currentTime >= scene.start && currentTime < sceneEnd) {
+      return SCENE_VOLUMES[sceneName as keyof typeof SCENE_VOLUMES] ?? 0.05;
+    }
+  }
+  return 0.05; // 默认音量
+};
+
+// 在组件中使用
+export const VideoWithDynamicBGM: React.FC = () => {
+  const { fps } = useVideoConfig();
+
+  return (
+    <>
+      {/* 配音 - 固定音量 */}
+      <Audio src={staticFile("audio/voiceover.mp3")} volume={1} />
+
+      {/* BGM - 动态音量 */}
+      <Audio
+        src={staticFile("audio/bgm.mp3")}
+        volume={(frame) => getDynamicVolume(frame, fps)}
+      />
+    </>
+  );
+};
+```
+
+### 进阶用法：平滑过渡
+
+```tsx
+import { interpolate } from "remotion";
+
+const getSmoothVolume = (frame: number, fps: number): number => {
+  const currentTime = frame / fps;
+
+  // 片头 (0-8s): 0.15 -> 片头结束前0.5s开始降低
+  if (currentTime < 7.5) return 0.15;
+  if (currentTime < 8) {
+    return interpolate(currentTime, [7.5, 8], [0.15, 0.05]);
+  }
+
+  // 正片 (8-71.5s): 0.05
+  if (currentTime < 71.5) return 0.05;
+
+  // 正片结束 -> 片尾 (71.5-72s): 平滑过渡到 0.12
+  if (currentTime < 72) {
+    return interpolate(currentTime, [71.5, 72], [0.05, 0.12]);
+  }
+
+  // 片尾 (72-85s): 0.12
+  return 0.12;
+};
+```
+
+### 组件模板
+
+```tsx
+// components/DynamicBGM.tsx
+import React from "react";
+import { Audio, staticFile, useVideoConfig } from "remotion";
+
+interface DynamicBGMProps {
+  /** BGM 文件路径 (相对于 public/) */
+  src: string;
+  /** 场景音量配置 */
+  sceneVolumes: Record<string, number>;
+  /** 场景时间配置 */
+  scenes: Record<string, { start: number; duration: number }>;
+  /** 是否启用平滑过渡 (默认 true) */
+  smoothTransition?: boolean;
+  /** 过渡时长 (秒, 默认 0.5) */
+  transitionDuration?: number;
+}
+
+export const DynamicBGM: React.FC<DynamicBGMProps> = ({
+  src,
+  sceneVolumes,
+  scenes,
+  smoothTransition = true,
+  transitionDuration = 0.5,
+}) => {
+  const { fps } = useVideoConfig();
+
+  const getVolume = (frame: number): number => {
+    const currentTime = frame / fps;
+
+    for (const [sceneName, scene] of Object.entries(scenes)) {
+      const sceneEnd = scene.start + scene.duration;
+      if (currentTime >= scene.start && currentTime < sceneEnd) {
+        return sceneVolumes[sceneName] ?? 0.05;
+      }
+    }
+    return 0.05;
+  };
+
+  return (
+    <Audio
+      src={staticFile(src)}
+      volume={(frame) => getVolume(frame)}
+    />
+  );
+};
+```
+
+### FFmpeg vs Remotion 对比
+
+| 方面 | FFmpeg 预处理 | Remotion 动态控制 |
+|------|--------------|------------------|
+| 调试便捷性 | ⚠️ 需重新处理音频 | ✅ 实时预览 |
+| 灵活性 | ⚠️ 固定一次 | ✅ 随时调整 |
+| 渲染性能 | ✅ 无额外开销 | ⚠️ 微小开销 |
+| 文件大小 | ⚠️ 预混合体积大 | ✅ 分离存储 |
+| 推荐场景 | 最终交付 | 开发调试 |
+
+**建议工作流**：
+1. 开发阶段使用 Remotion 动态控制快速调试
+2. 确定最终参数后，使用 FFmpeg 预处理生成交付版本
+
+---
+
 ## Python 脚本模板
 
 ```python
