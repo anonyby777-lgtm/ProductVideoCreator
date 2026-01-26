@@ -16,16 +16,17 @@ import { SCENES, FPS } from "./config/scenes";
 import { THEME } from "./config/theme";
 import type { Subtitle } from "./config/types";
 
+// 字体加载
 const { fontFamily } = loadFont();
 
-// ========== 字幕数据 ==========
+// ========== 字幕数据 (基于 voiceover_metadata.json 实际时长) ==========
 const SUBTITLES: Subtitle[] = [
-  { start: 0.5, end: 7.5, text: "1993年，黄仁勋在加州创立NVIDIA，开启了一段改变世界的旅程" },
-  { start: 8.5, end: 21.5, text: "三位工程师从餐厅起步，用4万美元启动资金，立志重新定义计算机图形" },
-  { start: 22.5, end: 37.5, text: "1999年，GeForce 256横空出世，GPU概念首次被提出，视觉计算进入新纪元" },
-  { start: 38.5, end: 51.5, text: "2006年CUDA发布，GPU不再只是图形处理器，而是通用并行计算平台" },
-  { start: 52.5, end: 71.5, text: "AI时代来临，NVIDIA成为全球首家万亿市值芯片公司，掌握全球80%AI算力" },
-  { start: 72.5, end: 84.5, text: "用芯片重新定义未来，NVIDIA的传奇仍在继续" },
+  { start: 0.5, end: 7.0, text: "1993年，黄仁勋在加州创立NVIDIA，开启了一段改变世界的旅程" },
+  { start: 8.5, end: 20.5, text: "三位工程师从餐厅起步，用4万美元启动资金，立志重新定义计算机图形" },
+  { start: 22.5, end: 36.5, text: "1999年，GeForce 256横空出世，GPU概念首次被提出，视觉计算进入新纪元" },
+  { start: 38.5, end: 51.0, text: "2006年CUDA发布，GPU不再只是图形处理器，而是通用并行计算平台" },
+  { start: 52.5, end: 70.5, text: "AI时代来临，NVIDIA成为全球首家万亿市值芯片公司，掌握全球80%AI算力" },
+  { start: 72.5, end: 83.0, text: "用芯片重新定义未来，NVIDIA的传奇仍在继续" },
 ];
 
 // ========== 字幕组件 ==========

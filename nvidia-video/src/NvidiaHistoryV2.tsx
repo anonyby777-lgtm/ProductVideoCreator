@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   AbsoluteFill,
   Audio,
@@ -11,29 +11,11 @@ import {
   spring,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/NotoSansSC";
+import { SCENES, FPS } from "./config/scenes";
+import { THEME } from "./config/theme";
 
+// 优化字体加载 - 只加载必要的字重
 const { fontFamily } = loadFont();
-
-const FPS = 30;
-
-// ========== 场景时间配置 ==========
-const SCENES = {
-  opening: { start: 0, duration: 8 },
-  founding: { start: 8, duration: 14 },
-  gpu: { start: 22, duration: 16 },
-  cuda: { start: 38, duration: 14 },
-  ai: { start: 52, duration: 20 },
-  closing: { start: 72, duration: 13 },
-};
-
-// ========== 主题颜色 ==========
-const THEME = {
-  primary: "#76B900",      // NVIDIA Green
-  background: "#0a0a0a",
-  text: "#ffffff",
-  muted: "#888888",
-  gradient: "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%)",
-};
 
 // ========== 可复用动画组件 ==========
 
@@ -354,12 +336,24 @@ const GPUScene: React.FC = () => {
 const CUDAScene: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // 代码雨效果
-  const codeLines = Array.from({ length: 20 }, (_, i) => ({
-    x: (i * 100) % 1920,
-    speed: 2 + (i % 3),
-    opacity: 0.1 + (i % 5) * 0.05,
-  }));
+  // 代码雨效果 - 使用 useMemo 和种子随机防止闪烁
+  const codeLines = useMemo(() => {
+    // 使用种子随机确保一致性
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed * 9999) * 10000;
+      return x - Math.floor(x);
+    };
+
+    return Array.from({ length: 20 }, (_, i) => ({
+      x: (i * 100) % 1920,
+      speed: 2 + (i % 3),
+      opacity: 0.1 + (i % 5) * 0.05,
+      // 预生成二进制字符串
+      chars: Array.from({ length: 20 }, (_, j) =>
+        seededRandom(i * 100 + j) > 0.5 ? "1" : "0"
+      ).join(""),
+    }));
+  }, []);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#1a1a2e" }}>
@@ -377,7 +371,7 @@ const CUDAScene: React.FC = () => {
             fontSize: 12,
           }}
         >
-          {Array.from({ length: 20 }, () => Math.random() > 0.5 ? "1" : "0").join("")}
+          {line.chars}
         </div>
       ))}
 

@@ -10,22 +10,12 @@ import {
   interpolate,
   spring,
 } from "remotion";
+import { SCENES, FPS } from "./config/scenes";
+import { THEME } from "./config/theme";
 
-const FPS = 30;
-
-// 场景时间配置 (秒)
-const SCENES = {
-  opening: { start: 0, duration: 8 },
-  founding: { start: 8, duration: 14 },
-  gpu: { start: 22, duration: 16 },
-  cuda: { start: 38, duration: 14 },
-  ai: { start: 52, duration: 20 },
-  closing: { start: 72, duration: 13 },
-};
-
-// NVIDIA 绿色
-const NVIDIA_GREEN = "#76B900";
-const DARK_BG = "#0a0a0a";
+// 为了兼容性保留的别名
+const NVIDIA_GREEN = THEME.primary;
+const DARK_BG = THEME.background;
 
 // ========== 场景组件 ==========
 

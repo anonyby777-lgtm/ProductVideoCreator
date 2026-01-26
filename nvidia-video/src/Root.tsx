@@ -3,9 +3,9 @@ import { Composition } from "remotion";
 import { NvidiaHistory } from "./NvidiaHistory";
 import { NvidiaHistoryV2, nvidiaHistoryV2Config } from "./NvidiaHistoryV2";
 import { NvidiaHistoryV3, nvidiaHistoryV3Config } from "./NvidiaHistoryV3";
+import { FPS, VIDEO_DURATION } from "./config/scenes";
 
-const FPS = 30;
-const DURATION_SECONDS = 85;
+const DURATION_SECONDS = VIDEO_DURATION;
 
 export const RemotionRoot: React.FC = () => {
   return (
