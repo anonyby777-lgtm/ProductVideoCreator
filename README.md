@@ -2,7 +2,7 @@
 
 **[中文文档](README_zh.md)**
 
-A standard Claude Code Skills toolkit for automated product video generation. Supports multiple video types: screen recording demos, image-based slideshows, and hybrid productions.
+A standard Skills toolkit for automated product video generation. Supports multiple video types: screen recording demos, image-based slideshows, and hybrid productions.
 
 ## Features
 
