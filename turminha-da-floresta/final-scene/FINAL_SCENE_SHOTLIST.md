@@ -1,6 +1,9 @@
 # CENA FINAL — "O FESTIVAL DAS CORES" (Encerramento Interativo)
 ## A TURMINHA DA FLORESTA E O TREM DAS CORES — Shot-list & Seedance 2.5 Production Doc
 
+> 💡 **Quer tudo em um só arquivo p/ colar na IA de vídeo?** Use `CENA_FINAL_MASTER_PROMPT.md`
+> (prompts autossuficientes + bible + timeline + cue sheet em um único Markdown).
+
 > **Pipeline:** cada shot é gerado no **Seedance 2.5** no modo **image-to-video**,
 > usando o keyframe indicado como **reference frame** + o prompt abaixo.
 > Depois, monta-se o corte num editor (CapCut / Premiere / Remotion) e sobrepõe-se
