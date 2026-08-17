@@ -168,13 +168,13 @@ Vozes isoladas p/ remix ficam em `audio/raw/` (coro "Muito bem!" e "Tchauuuu!" p
 | Visual Bible | ✅ pronto (`../VISUAL_BIBLE.md`) |
 | 10 keyframes 16:9 | ✅ prontos, consistentes e sem texto |
 | 7 falas solo (Tico/Bibi/Nino/Luma) | ✅ prontas |
-| Coro "Muito bem!" | ⚠️ mix 3 vozes (Tico+Bibi+Nino) — `raw/08_muitobem_luma.mp3` pendente p/ remix 4 vozes |
-| Coro "Tchauuuu!" | ⏳ pendente (4 takes `raw/09_tchau_*.mp3`) — excedeu a cota TTS deste turno; **basta pedir "continue"** que gero e remixo na hora |
+| Coro "Muito bem!" | ✅ mix 4 vozes (Tico+Bibi+Nino+Luma, stagger 0/70/140/210 ms) |
+| Coro "Tchauuuu!" | ✅ mix 4 vozes (Tico+Bibi+Nino+Luma, stagger 0/70/140/210 ms) |
 | SFX apito PII! PII! / chime de sparkles | ✅ sintetizados |
 | Shot-list Seedance 2.5 + storyboard.json | ✅ prontos |
 
-Remix dos coros (quando os takes existirem):
-`ffmpeg -i raw/0X_<voz>.mp3 ×4 -filter_complex "adelay 0/70/140/210 ms + amix normalize=0 + volume + alimiter" mixed/…`
+Todos os assets de áudio e imagem prontos (2026-08-17). Remix dos coros já aplicado:
+`adelay 0/70/140/210 ms + amix normalize=0 + volume 3.0 + alimiter` → `mixed/08_…` e `mixed/09_…`
 
 ---
 
