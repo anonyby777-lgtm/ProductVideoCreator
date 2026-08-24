@@ -1,0 +1,67 @@
+{
+  "vo": [
+    {
+      "file": "vo_01_hook.mp3",
+      "start": 0.1,
+      "dur": 5.016,
+      "end": 5.116,
+      "atempo": 1.1865
+    },
+    {
+      "file": "vo_02_preso.mp3",
+      "start": 5.18,
+      "dur": 6.758,
+      "end": 11.938,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_03_luta.mp3",
+      "start": 12.18,
+      "dur": 4.019,
+      "end": 16.199,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_04_jason.mp3",
+      "start": 19.18,
+      "dur": 5.883,
+      "end": 25.063,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_05_dupla.mp3",
+      "start": 27.18,
+      "dur": 7.098,
+      "end": 34.278,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_06_bonnie.mp3",
+      "start": 35.18,
+      "dur": 5.178,
+      "end": 40.358,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_07_golpe.mp3",
+      "start": 43.18,
+      "dur": 5.637,
+      "end": 48.817,
+      "atempo": 1.0
+    },
+    {
+      "file": "vo_08_jogaveis.mp3",
+      "start": 51.18,
+      "dur": 5.814,
+      "end": 56.994,
+      "atempo": 1.3087
+    },
+    {
+      "file": "vo_09_cta.mp3",
+      "start": 57.05,
+      "dur": 2.845,
+      "end": 59.895,
+      "atempo": 1.0714
+    }
+  ]
+}

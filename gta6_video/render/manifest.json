@@ -1,0 +1,265 @@
+{
+ "shots": [
+  {
+   "img": "images/user/GTA6_Lucia_Dinheiro_01.png",
+   "t0": 0.0,
+   "t1": 1.65,
+   "move": "punch",
+   "fx": 0.547,
+   "fy": 0.414,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Carro_01.png",
+   "t0": 1.65,
+   "t1": 3.3,
+   "move": "diag",
+   "fx": 0.557,
+   "fy": 0.411,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Vice_City_Noite_01.png",
+   "t0": 3.3,
+   "t1": 5.0,
+   "move": "in",
+   "fx": 0.5,
+   "fy": 0.45,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Dinheiro_01.png",
+   "t0": 5.0,
+   "t1": 7.35,
+   "move": "in",
+   "fx": 0.547,
+   "fy": 0.414,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Dinheiro_01.png",
+   "t0": 7.35,
+   "t1": 9.7,
+   "move": "right",
+   "fx": 0.547,
+   "fy": 0.414,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Treino_01.png",
+   "t0": 9.7,
+   "t1": 12.0,
+   "move": "punch",
+   "fx": 0.68,
+   "fy": 0.451,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Treino_01.png",
+   "t0": 12.0,
+   "t1": 14.35,
+   "move": "diag2",
+   "fx": 0.68,
+   "fy": 0.451,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Treino_01.png",
+   "t0": 14.35,
+   "t1": 16.65,
+   "move": "left",
+   "fx": 0.755,
+   "fy": 0.362,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Treino_01.png",
+   "t0": 16.65,
+   "t1": 19.0,
+   "move": "out",
+   "fx": 0.68,
+   "fy": 0.451,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Carro_01.png",
+   "t0": 19.0,
+   "t1": 21.0,
+   "move": "in",
+   "fx": 0.557,
+   "fy": 0.411,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Carro_01.png",
+   "t0": 21.0,
+   "t1": 23.0,
+   "move": "up",
+   "fx": 0.557,
+   "fy": 0.411,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Celular_01.png",
+   "t0": 23.0,
+   "t1": 25.0,
+   "move": "diag",
+   "fx": 0.479,
+   "fy": 0.402,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Celular_01.png",
+   "t0": 25.0,
+   "t1": 27.0,
+   "move": "punch",
+   "fx": 0.479,
+   "fy": 0.402,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Danca_01.png",
+   "t0": 27.0,
+   "t1": 29.0,
+   "move": "in_slow",
+   "fx": 0.5,
+   "fy": 0.34,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Danca_01.png",
+   "t0": 29.0,
+   "t1": 31.0,
+   "move": "left",
+   "fx": 0.5,
+   "fy": 0.36,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Danca_Noite_01.png",
+   "t0": 31.0,
+   "t1": 33.0,
+   "move": "right",
+   "fx": 0.32,
+   "fy": 0.443,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Danca_Noite_01.png",
+   "t0": 33.0,
+   "t1": 35.0,
+   "move": "in",
+   "fx": 0.32,
+   "fy": 0.443,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Noite_01.png",
+   "t0": 35.0,
+   "t1": 37.0,
+   "move": "in_slow",
+   "fx": 0.244,
+   "fy": 0.412,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Noite_01.png",
+   "t0": 37.0,
+   "t1": 39.0,
+   "move": "down",
+   "fx": 0.244,
+   "fy": 0.412,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Jason_Assalto_01.png",
+   "t0": 39.0,
+   "t1": 41.0,
+   "move": "in",
+   "fx": 0.5,
+   "fy": 0.4,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Jason_Assalto_01.png",
+   "t0": 41.0,
+   "t1": 43.0,
+   "move": "diag2",
+   "fx": 0.5,
+   "fy": 0.38,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Lucia_Jason_Assalto_01.png",
+   "t0": 43.0,
+   "t1": 45.0,
+   "move": "punch",
+   "fx": 0.5,
+   "fy": 0.36,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Vice_City_Noite_01.png",
+   "t0": 45.0,
+   "t1": 47.0,
+   "move": "left",
+   "fx": 0.5,
+   "fy": 0.46,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Leonida_Keys_01.png",
+   "t0": 47.0,
+   "t1": 49.0,
+   "move": "diag",
+   "fx": 0.5,
+   "fy": 0.45,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Vice_City_Noite_01.png",
+   "t0": 49.0,
+   "t1": 51.0,
+   "move": "right",
+   "fx": 0.5,
+   "fy": 0.44,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Danca_Noite_01.png",
+   "t0": 51.0,
+   "t1": 53.0,
+   "move": "in",
+   "fx": 0.32,
+   "fy": 0.443,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Leonida_Keys_01.png",
+   "t0": 53.0,
+   "t1": 55.0,
+   "move": "diag",
+   "fx": 0.5,
+   "fy": 0.42,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Vice_City_Noite_01.png",
+   "t0": 55.0,
+   "t1": 57.0,
+   "move": "in",
+   "fx": 0.5,
+   "fy": 0.4,
+   "mode": "cover"
+  },
+  {
+   "img": "images/user/GTA6_Jason_Lucia_Noite_01.png",
+   "t0": 57.0,
+   "t1": 60.0,
+   "move": "in_slow",
+   "fx": 0.244,
+   "fy": 0.412,
+   "mode": "cover"
+  }
+ ]
+}

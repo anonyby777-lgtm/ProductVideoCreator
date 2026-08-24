@@ -52,3 +52,10 @@ npm-debug.log*
 # Build
 dist/
 build/
+
+# GTA6 video project: small media + final deliverable must persist across sandbox restarts
+!gta6_video/audio/
+!gta6_video/audio/**
+!gta6_video/render/
+!gta6_video/render/**
+!gta6_video/GTA6_Lucia_Jason_60s.mp4
