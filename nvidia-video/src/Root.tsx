@@ -5,12 +5,21 @@ import { NvidiaHistoryV2, nvidiaHistoryV2Config } from "./NvidiaHistoryV2";
 import { NvidiaHistoryV3, nvidiaHistoryV3Config } from "./NvidiaHistoryV3";
 import { FPS, VIDEO_DURATION } from "./config/scenes";
 import { VIDEO_PRESETS, VideoPreset } from "./config/videoPresets";
+import { animeMusicVideoConfig } from "./anime-clip/AnimeMusicVideo";
 
 const DURATION_SECONDS = VIDEO_DURATION;
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id={animeMusicVideoConfig.id}
+        component={animeMusicVideoConfig.component}
+        durationInFrames={animeMusicVideoConfig.durationInFrames}
+        fps={animeMusicVideoConfig.fps}
+        width={animeMusicVideoConfig.width}
+        height={animeMusicVideoConfig.height}
+      />
       {/* ========== 原始版本 (1080p) ========== */}
 
       {/* V1 版本 */}

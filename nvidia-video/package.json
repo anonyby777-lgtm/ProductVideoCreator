@@ -15,7 +15,9 @@
     "render:v3": "remotion render src/index.ts NvidiaHistoryV3 out/nvidia_history_v3.mp4",
     "render:gif": "remotion render src/index.ts NvidiaHistory out/nvidia_history.gif --image-format=png",
     "clean": "rm -rf out/*.mp4 out/*.gif",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "render:anime": "remotion render src/index.ts AnimeMusicVideo out/anime_music_video.mp4",
+    "studio:anime": "remotion studio src/index.ts"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
