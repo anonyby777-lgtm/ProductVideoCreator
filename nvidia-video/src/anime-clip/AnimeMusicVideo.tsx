@@ -9,7 +9,7 @@ const { fontFamily: cinzel } = loadCinzel("normal", { weights: ["700"] });
 const { fontFamily: bebas } = loadBebasNeue("normal", { weights: ["400"] });
 
 // Turn this on after placing your licensed audio at public/anime-clip/audio/song.mp3.
-const HAS_MUSIC_ASSET = false;
+const HAS_MUSIC_ASSET = true;
 
 const Placeholder: React.FC<{ scene: AnimeScene }> = ({ scene }) => {
   const frame = useCurrentFrame();
@@ -61,4 +61,4 @@ export const AnimeMusicVideo: React.FC = () => <AbsoluteFill style={{ background
   <Lyrics />
 </AbsoluteFill>;
 
-export const animeMusicVideoConfig = { id:"AnimeMusicVideo", component:AnimeMusicVideo, durationInFrames:180 * 30, fps:30, width:1920, height:1080 };
+export const animeMusicVideoConfig = { id:"AnimeMusicVideo", component:AnimeMusicVideo, durationInFrames:240 * 30, fps:30, width:1920, height:1080 };
