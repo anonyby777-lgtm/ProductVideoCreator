@@ -1,0 +1,197 @@
+================================================================================
+ARQUIVO: package.json
+================================================================================
+
+{
+  "name": "nextjs-postgresql-template",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "17.3.1",
+    "drizzle-orm": "0.45.2",
+    "framer-motion": "^13.1.1",
+    "lenis": "^1.3.26",
+    "lucide-react": "^1.33.0",
+    "next": "16.2.6",
+    "pg": "8.20.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.17",
+    "@types/node": "22.19.15",
+    "@types/pg": "8.18.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "postcss": "8.5.8",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3"
+  }
+}
+
+================================================================================
+ARQUIVO: tsconfig.json
+================================================================================
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+
+================================================================================
+ARQUIVO: next.config.ts
+================================================================================
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {};
+
+export default nextConfig;
+
+================================================================================
+ARQUIVO: postcss.config.mjs
+================================================================================
+
+const postcssConfig = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default postcssConfig;
+
+================================================================================
+ARQUIVO: drizzle.config.json
+================================================================================
+
+{
+  "dialect": "postgresql",
+  "schema": "./src/db/schema.ts",
+  "dbCredentials": {
+    "url": "postgresql://postgres:postgres@127.0.0.1:5432/app_db"
+  }
+}
+
+================================================================================
+ARQUIVO: seed.sql
+================================================================================
+
+-- VULTO — seed inicial (idempotente)
+TRUNCATE order_items, orders, subscribers, products RESTART IDENTITY CASCADE;
+
+INSERT INTO products
+  (slug, name, category, description, price_cents, compare_at_cents, image, sizes, details, featured, badge)
+VALUES
+  (
+    'camiseta-vulto-01',
+    'Camiseta Oversized V/01',
+    'camisetas',
+    'A base de tudo. Malha pesada de 240 g/m² com ombro caído e caimento boxy — a peça que segura qualquer fit, do skate ao rolê das 3h.',
+    14900, 18900,
+    'https://images.pexels.com/photos/7643904/pexels-photo-7643904.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900',
+    ARRAY['P','M','G','GG','XG'],
+    ARRAY['Malha 100% algodão penteado','240 g/m² — pesada e estruturada','Modelagem oversized, ombro caído','Bordado tonal V/01 no peito'],
+    false, 'NOVO'
+  ),
+  (
+    'camiseta-faixa-ml',
+    'Manga Longa Faixa',
+    'camisetas',
+    'Silk serigráfico descendo pelas duas mangas, corpo limpo. Corte reto alongado pra usar por dentro ou por cima — você decide.',
+    18900, NULL,
+    'https://images.pexels.com/photos/8586782/pexels-photo-8586782.png?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900',
+    ARRAY['P','M','G','GG','XG'],
+    ARRAY['Algodão pima 210 g/m²','Silk nas duas mangas','Barra com ajuste interno','Corte reto alongado'],
+    false, NULL
+  ),
+  (
+    'hoodie-concreto',
+    'Hoodie Concreto 450',
+    'agasalhos',
+    'O monstro do Drop 03. Moletom de 450 g/m² tingido em peça, capuz forrado em camada dupla e silhueta ampla. Pesa no cabide, some no corpo.',
+    32900, 38900,
+    '/images/products/hoodie.jpg',
+    ARRAY['P','M','G','GG','XG'],
+    ARRAY['Moletom 100% algodão — 450 g/m²','Capuz forrado em camada dupla','Tingimento em peça: cor profunda','Canguru reforçado, ilhós cegos'],
+    true, 'DROP 03'
+  ),
+  (
+    'bomber-noite',
+    'Bomber Noite/24',
+    'agasalhos',
+    'Nylon ripstop com brilho fosco, forro acolchoado e zíper duplo YKK. Feita pra virar a noite em pé — e continuar em pé de manhã.',
+    59900, NULL,
+    'https://images.pexels.com/photos/5592267/pexels-photo-5592267.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900',
+    ARRAY['P','M','G','GG'],
+    ARRAY['Nylon ripstop brilho fosco','Forro acolchoado 120 g','Zíper YKK duplo cursor','Ribanas caneladas punho e barra'],
+    false, 'ÚLTIMAS UN.'
+  ),
+  (
+    'cargo-utilitaria',
+    'Cargo Utilitária',
+    'calcas',
+    'Sarja 8.5 oz com oito bolsos de verdade — não decorativos. Barra ajustável com cadarço e cós anatômico pra aguentar o dia inteiro na rua.',
+    37900, NULL,
+    'https://images.pexels.com/photos/35043249/pexels-photo-35043249.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900',
+    ARRAY['P','M','G','GG','XG'],
+    ARRAY['Sarja peletizada 8.5 oz','8 bolsos funcionais','Ajuste de barra com cadarço','Cós elástico com fivela'],
+    false, NULL
+  ),
+  (
+    'five-panel-v',
+    'Five Panel V.',
+    'acessorios',
+    'Cinco gomos, aba reta e bordado 3D. O acabamento que fecha o fit — e o item que mais sai das prateleiras há 3 drops seguidos.',
+    11900, NULL,
+    'https://images.pexels.com/photos/18097719/pexels-photo-18097719.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900',
+    ARRAY['ÚNICO'],
+    ARRAY['Aba reta estruturada','Fivela metálica regulável','Bordado 3D frontal','Forro antimicrobiano'],
+    false, 'BEST-SELLER'
+  );
